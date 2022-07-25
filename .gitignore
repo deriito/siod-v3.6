@@ -1,0 +1,21 @@
+# builded files
+/*.o
+/*.so
+/cp-build
+/csiod
+/ftp-cp
+/ftp-get
+/ftp-put
+/ftp-test
+/http-get
+/http-stress
+/proxy-server
+/siod
+/snapshot-compare
+/snapshot-dir
+
+# idea folder
+.idea
+
+# macos finder folder
+.DS_Store
