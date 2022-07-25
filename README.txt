@@ -8,7 +8,7 @@ Quick Start:
     sh-5.1# > cd
     sh-5.1# > git clone git@github.com:deriito/siod.git
 
-3. builing & installing
+3. building & installing
     sh-5.1# > cd siod
     sh-5.1# > make linux
     sh-5.1# > make install
