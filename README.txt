@@ -1,7 +1,29 @@
-edited by deriito (2022.07.25)
+Quick Start:
+
+1. Make the environment for building the Siod (with Docker)
+    1.1 Download docker image with the command "docker pull deriito/jikesrvm-3.1.4-buildenv:0.2"
+    1.2 Use the image to start a docker container
+
+2. Download this source code
+    > git clone git@github.com:deriito/siod.git
+
+3. builing & installing
+    > cd siod
+    > make linux
+    > make install
+
+4. Run Siod in command line
+    > siod
+    > (print "Hello World!")
+
+=======================================================================================================
+Update History:
+
+edited by deriito (2022.07.25):
 This is the lastest version 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
 
 =======================================================================================================
+Original "README.txt" is as following:
 
 This is version 3.4 of Siod, Scheme In One Defun.
 
