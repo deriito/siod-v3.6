@@ -20,7 +20,7 @@ Quick Start:
 =======================================================================================================
 Update History:
 
-edited by deriito (2022.07.25):
+edited on 2022.07.25:
 This is the lastest version 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
 
 =======================================================================================================
