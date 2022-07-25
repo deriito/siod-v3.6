@@ -1,3 +1,8 @@
+edited by deriito (2022.07.25)
+This is the lasted bersion 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
+
+=======================================================================================================
+
 This is version 3.4 of Siod, Scheme In One Defun.
 
 It is a small implementation of the Scheme programming language
