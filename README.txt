@@ -5,16 +5,17 @@ Quick Start:
     1.2 Use the image to start a docker container
 
 2. Download this source code
-    > git clone git@github.com:deriito/siod.git
+    sh-5.1# > cd
+    sh-5.1# > git clone git@github.com:deriito/siod.git
 
 3. builing & installing
-    > cd siod
-    > make linux
-    > make install
+    sh-5.1# > cd siod
+    sh-5.1# > make linux
+    sh-5.1# > make install
 
 4. Run Siod in command line
-    > siod
-    > (print "Hello World!")
+    sh-5.1# > siod
+    sh-5.1# > (print "Hello World!")
 
 =======================================================================================================
 Update History:
