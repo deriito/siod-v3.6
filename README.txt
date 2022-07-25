@@ -1,6 +1,6 @@
 Quick Start:
 
-1. Make the environment for building the Siod (with Docker)
+1. Make the environment for building Siod (with Docker)
     1.1 Download docker image with the command "docker pull deriito/jikesrvm-3.1.4-buildenv:0.2"
     1.2 Use the image to start a docker container
 
