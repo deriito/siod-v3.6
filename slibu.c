@@ -99,10 +99,11 @@
 #include "siodp.h"
 #include "md5.h"
 
-static void init_slibu_version(void)
-{setvar(cintern("*slibu-version*"),
-	cintern("$Id: slibu.c,v 1.27 1997/12/01 19:16:22 gjc Exp $"),
-	NIL);}
+static void init_slibu_version(void) {
+    setvar(cintern("*slibu-version*"),
+           cintern("$Id: slibu.c,v 1.27 1997/12/01 19:16:22 gjc Exp $"),
+           NIL);
+}
 
 
 LISP sym_channels = NIL;
@@ -118,23 +119,24 @@ char *strdup(char *in)
  return(r);}
 #endif
 
-LISP lsystem(LISP args)
-{int retval;
- long iflag;
- iflag = no_interrupt(1);
- retval = system(get_c_string(string_append(args)));
- no_interrupt(iflag);
- if (retval < 0)
-   return(cons(flocons(retval),llast_c_errmsg(-1)));
- else
-   return(flocons(retval));}
+LISP lsystem(LISP args) {
+    int retval;
+    long iflag;
+    iflag = no_interrupt(1);
+    retval = system(get_c_string(string_append(args)));
+    no_interrupt(iflag);
+    if (retval < 0)
+        return (cons(flocons(retval), llast_c_errmsg(-1)));
+    else
+        return (flocons(retval));
+}
 
 #ifndef WIN32
-LISP lgetuid(void)
-{return(flocons(getuid()));}
 
-LISP lgetgid(void)
-{return(flocons(getgid()));}
+LISP lgetuid(void) { return (flocons(getuid())); }
+
+LISP lgetgid(void) { return (flocons(getgid())); }
+
 #endif
 
 #ifdef unix
@@ -169,23 +171,23 @@ LISP lgetcwd(void)
 
 LISP ldecode_pwent(struct passwd *p)
 {return(symalist(
-		 "name",strcons(strlen(p->pw_name),p->pw_name),
-		 "passwd",strcons(strlen(p->pw_passwd),p->pw_passwd),
-		 "uid",flocons(p->pw_uid),
-		 "gid",flocons(p->pw_gid),
-		 "dir",strcons(strlen(p->pw_dir),p->pw_dir),
-		 "gecos",strcons(strlen(p->pw_gecos),p->pw_gecos),
+         "name",strcons(strlen(p->pw_name),p->pw_name),
+         "passwd",strcons(strlen(p->pw_passwd),p->pw_passwd),
+         "uid",flocons(p->pw_uid),
+         "gid",flocons(p->pw_gid),
+         "dir",strcons(strlen(p->pw_dir),p->pw_dir),
+         "gecos",strcons(strlen(p->pw_gecos),p->pw_gecos),
 #if defined(__osf__) || defined(hpux) || defined(sun)
-		 "comment",strcons(strlen(p->pw_comment),p->pw_comment),
+         "comment",strcons(strlen(p->pw_comment),p->pw_comment),
 #endif
 #if defined(hpux) || defined(sun)
-		 "age",strcons(strlen(p->pw_age),p->pw_age),
+         "age",strcons(strlen(p->pw_age),p->pw_age),
 #endif
 #if defined(__osf__)
-		 "quota",flocons(p->pw_quota),
+         "quota",flocons(p->pw_quota),
 #endif
-		 "shell",strcons(strlen(p->pw_shell),p->pw_shell),
-		 NULL));}
+         "shell",strcons(strlen(p->pw_shell),p->pw_shell),
+         NULL));}
 
 static char *strfield(char *name,LISP alist)
 {LISP value,key = rintern(name);
@@ -198,7 +200,7 @@ static long longfield(char *name,LISP alist)
  if NULLP(value = assq(key,alist))
    return(0);
  return(get_c_long(cdr(value)));}
- 
+
 void lencode_pwent(LISP alist,struct passwd *p)
 {p->pw_name = strfield("name",alist);
  p->pw_passwd = strfield("passwd",alist);
@@ -304,19 +306,19 @@ LISP laccess_problem(LISP lfname,LISP lacc)
  for(p=acc;*p;++p)
    switch(*p)
      {case 'r':
-	amode |= R_OK;
-	break;
+    amode |= R_OK;
+    break;
       case 'w':
-	amode |= W_OK;
-	break;
+    amode |= W_OK;
+    break;
       case 'x':
-	amode |= X_OK;
-	break;
+    amode |= X_OK;
+    break;
       case 'f':
-	amode |= F_OK;
-	break;
+    amode |= F_OK;
+    break;
       default:
-	err("bad access mode",lacc);}
+    err("bad access mode",lacc);}
  retval = access(fname,amode);
  no_interrupt(iflag);
  if (retval < 0)
@@ -384,26 +386,28 @@ LISP lrename(LISP p1,LISP p2)
 
 #endif
 
-LISP lrandom(LISP n)
-{int res;
+LISP lrandom(LISP n) {
+    int res;
 #if defined(hpux) || defined(vms) || defined(sun) || defined(sgi) || defined(WIN32)
- res = rand();
+    res = rand();
 #endif
 #if defined(__osf__) || defined(linux)
- res = random();
+    res = random();
 #endif
- return(flocons(NNULLP(n) ? res % get_c_long(n) : res));}
+    return (flocons(NNULLP(n) ? res % get_c_long(n) : res));
+}
 
-LISP lsrandom(LISP n)
-{long seed;
- seed = get_c_long(n);
+LISP lsrandom(LISP n) {
+    long seed;
+    seed = get_c_long(n);
 #if defined(hpux) || defined(vms) || defined(sun) || defined(sgi) || defined(WIN32)
- srand(seed);
+    srand(seed);
 #endif
 #if defined(__osf__) || defined(linux)
- srandom(seed);
+    srandom(seed);
 #endif
- return(NIL);}
+    return (NIL);
+}
 
 #ifdef unix
 
@@ -422,18 +426,20 @@ LISP lfork(void)
 
 #endif
 
-char **list2char(LISP *safe,LISP v)
-{char **x,*tmp;
- long j,n;
- LISP l;
- n = get_c_long(llength(v));
- *safe = cons(mallocl(&x,sizeof(char *) * (n + 1)),*safe);
- for(l=v,j=0;j<n;l=cdr(l),++j)
-   {tmp = get_c_string(car(l));
-    *safe = cons(mallocl(&x[j],strlen(tmp)+1),*safe);
-    strcpy(x[j],tmp);}
- x[n] = NULL;
- return(x);}
+char **list2char(LISP *safe, LISP v) {
+    char **x, *tmp;
+    long j, n;
+    LISP l;
+    n = get_c_long(llength(v));
+    *safe = cons(mallocl(&x, sizeof(char *) * (n + 1)), *safe);
+    for (l = v, j = 0; j < n; l = cdr(l), ++j) {
+        tmp = get_c_string(car(l));
+        *safe = cons(mallocl(&x[j], strlen(tmp) + 1), *safe);
+        strcpy(x[j], tmp);
+    }
+    x[n] = NULL;
+    return (x);
+}
 
 #ifdef unix
 
@@ -464,28 +470,33 @@ LISP lnice(LISP val)
 
 #endif
 
-int assemble_options(LISP l, ...)
-{int result = 0,val,noptions,nmask = 0;
- LISP lsym,lp = NIL;
- char *sym;
- va_list syms;
- if NULLP(l) return(0);
- noptions = CONSP(l) ? get_c_long(llength(l)) : -1;
- va_start(syms,l);
- while((sym = va_arg(syms,char *)))
-   {val = va_arg(syms,int);
-    lsym = cintern(sym);
-    if (EQ(l,lsym) || (CONSP(l) && NNULLP(lp = memq(lsym,l))))
-      {result |= val;
-       if (noptions > 0)
-	 nmask = nmask | (1 << (noptions - get_c_long(llength(lp))));
-       else
-	 noptions = -2;}}
- va_end(syms);
- if ((noptions == -1) ||
-     ((noptions > 0) && (nmask != ((1 << noptions) - 1))))
-   err("contains undefined options",l);
- return(result);}
+int assemble_options(LISP l, ...) {
+    int result = 0, val, noptions, nmask = 0;
+    LISP lsym, lp = NIL;
+    char *sym;
+    va_list syms;
+    if NULLP(l) return (0);
+    noptions = CONSP(l) ? get_c_long(llength(l)) : -1;
+    va_start(syms, l);
+    while ((sym = va_arg(syms,char *)))
+    {
+        val = va_arg(syms,
+        int);
+        lsym = cintern(sym);
+        if (EQ(l, lsym) || (CONSP(l) && NNULLP(lp = memq(lsym, l)))) {
+            result |= val;
+            if (noptions > 0)
+                nmask = nmask | (1 << (noptions - get_c_long(llength(lp))));
+            else
+                noptions = -2;
+        }
+    }
+    va_end(syms);
+    if ((noptions == -1) ||
+        ((noptions > 0) && (nmask != ((1 << noptions) - 1))))
+        err("contains undefined options", l);
+    return (result);
+}
 
 #ifdef unix
 
@@ -495,15 +506,15 @@ LISP lwait(LISP lpid,LISP loptions)
  pid = NULLP(lpid) ? -1 : get_c_long(lpid);
  options = assemble_options(loptions,
 #ifdef WCONTINUED
-			    "WCONTINUED",WCONTINUED,
+                "WCONTINUED",WCONTINUED,
 #endif
 #ifdef WNOWAIT
-			    "WNOWAIT",WNOWAIT,
+                "WNOWAIT",WNOWAIT,
 #endif
-			    "WNOHANG",WNOHANG,
-			    "WUNTRACED",WUNTRACED,
-			    NULL);
- iflag = no_interrupt(1); 
+                "WNOHANG",WNOHANG,
+                "WUNTRACED",WUNTRACED,
+                NULL);
+ iflag = no_interrupt(1);
  ret = waitpid(pid,&status,options);
  no_interrupt(iflag);
  if (ret == 0)
@@ -518,7 +529,7 @@ LISP lkill(LISP pid,LISP sig)
 {long iflag;
  iflag = no_interrupt(1);
  if (kill(get_c_long(pid),
-	  NULLP(sig) ? SIGKILL : get_c_long(sig)))
+      NULLP(sig) ? SIGKILL : get_c_long(sig)))
    err("kill",llast_c_errmsg(-1));
  else
    no_interrupt(iflag);
@@ -526,8 +537,7 @@ LISP lkill(LISP pid,LISP sig)
 
 #endif
 
-LISP lgetpid(void)
-{return(flocons(getpid()));}
+LISP lgetpid(void) { return (flocons(getpid())); }
 
 #ifdef unix
 LISP lgetpgrp(void)
@@ -551,25 +561,29 @@ LISP lgetgrgid(LISP n)
 #endif
 
 #ifndef WIN32
-LISP lgetppid(void)
-{return(flocons(getppid()));}
+
+LISP lgetppid(void) { return (flocons(getppid())); }
+
 #endif
 
-LISP lmemref_byte(LISP addr)
-{unsigned char *ptr = (unsigned char *) get_c_long(addr);
- return(flocons(*ptr));}
+LISP lmemref_byte(LISP addr) {
+    unsigned char *ptr = (unsigned char *) get_c_long(addr);
+    return (flocons(*ptr));
+}
 
-LISP lexit(LISP val)
-{int iflag = no_interrupt(1);
- exit(get_c_long(val));
- no_interrupt(iflag);
- return(NIL);}
+LISP lexit(LISP val) {
+    int iflag = no_interrupt(1);
+    exit(get_c_long(val));
+    no_interrupt(iflag);
+    return (NIL);
+}
 
-LISP ltrunc(LISP x)
-{long i;
- if NFLONUMP(x) err("wta to trunc",x);
- i = (long) FLONM(x);
- return(flocons((double) i));}
+LISP ltrunc(LISP x) {
+    long i;
+    if NFLONUMP(x) err("wta to trunc", x);
+    i = (long) FLONM(x);
+    return (flocons((double) i));
+}
 
 #ifdef unix
 LISP lputenv(LISP lstr)
@@ -585,44 +599,52 @@ LISP lputenv(LISP lstr)
    return(NIL);}
 #endif
 
-MD5_CTX * get_md5_ctx(LISP a)
-{if (TYPEP(a,tc_byte_array) &&
-     (a->storage_as.string.dim == sizeof(MD5_CTX)))
-   return((MD5_CTX *)a->storage_as.string.data);
- else
-   {err("not an MD5_CTX array",a);
-    return(NULL);}}
+MD5_CTX *get_md5_ctx(LISP a) {
+    if (TYPEP(a, tc_byte_array) &&
+        (a->storage_as.string.dim == sizeof(MD5_CTX)))
+        return ((MD5_CTX *) a->storage_as.string.data);
+    else {
+        err("not an MD5_CTX array", a);
+        return (NULL);
+    }
+}
 
-LISP md5_init(void)
-{LISP a = arcons(tc_byte_array,sizeof(MD5_CTX),1);
- MD5Init(get_md5_ctx(a));
- return(a);}
+LISP md5_init(void) {
+    LISP a = arcons(tc_byte_array, sizeof(MD5_CTX), 1);
+    MD5Init(get_md5_ctx(a));
+    return (a);
+}
 
-void md5_update_from_file(MD5_CTX *ctx,FILE *f,unsigned char *buff,long dim)
-{size_t len;
- while((len = fread(buff,sizeof(buff[0]),dim,f)))
-   MD5Update(ctx,buff,len);}
+void md5_update_from_file(MD5_CTX *ctx, FILE *f, unsigned char *buff, long dim) {
+    size_t len;
+    while ((len = fread(buff, sizeof(buff[0]), dim, f)))
+        MD5Update(ctx, buff, len);
+}
 
-LISP md5_update(LISP ctx,LISP str,LISP len)
-{char *buffer; long dim,n;
- buffer = get_c_string_dim(str,&dim);
- if TYPEP(len,tc_c_file)
-   {md5_update_from_file(get_md5_ctx(ctx), get_c_file(len,NULL),
-			 (unsigned char *)buffer,dim);
-    return(NIL);}
- else if NULLP(len)
-   n = dim;
- else
-   {n = get_c_long(len);
-    if ((n < 0) || (n > dim)) err("invalid length for string",len);}
- MD5Update(get_md5_ctx(ctx),(unsigned char *)buffer,n);
- return(NIL);}
+LISP md5_update(LISP ctx, LISP str, LISP len) {
+    char *buffer;
+    long dim, n;
+    buffer = get_c_string_dim(str, &dim);
+    if TYPEP(len, tc_c_file) {
+        md5_update_from_file(get_md5_ctx(ctx), get_c_file(len, NULL),
+                             (unsigned char *) buffer, dim);
+        return (NIL);
+    } else if NULLP(len)
+        n = dim;
+    else {
+        n = get_c_long(len);
+        if ((n < 0) || (n > dim)) err("invalid length for string", len);
+    }
+    MD5Update(get_md5_ctx(ctx), (unsigned char *) buffer, n);
+    return (NIL);
+}
 
-LISP md5_final(LISP ctx)
-{LISP result = arcons(tc_byte_array,16,0);
- MD5Final((unsigned char *) result->storage_as.string.data,
-	  get_md5_ctx(ctx));
- return(result);}
+LISP md5_final(LISP ctx) {
+    LISP result = arcons(tc_byte_array, 16, 0);
+    MD5Final((unsigned char *) result->storage_as.string.data,
+             get_md5_ctx(ctx));
+    return (result);
+}
 
 #if defined(__osf__) || defined(sun)
 
@@ -705,24 +727,24 @@ LISP current_resource_usage(LISP kind)
  if (getrusage(code,&u))
    return(err("getrusage",llast_c_errmsg(-1)));
  return(symalist("utime",flocons(((double)u.ru_utime.tv_sec) +
-				 TV_FRAC(u.ru_utime)),
-		 "stime",flocons(((double)u.ru_stime.tv_sec) +
-				 TV_FRAC(u.ru_stime)),
-		 "maxrss",flocons(u.ru_maxrss),
-		 "ixrss",flocons(u.ru_ixrss),
-		 "idrss",flocons(u.ru_idrss),
-		 "isrss",flocons(u.ru_isrss),
-		 "minflt",flocons(u.ru_minflt),
-		 "majflt",flocons(u.ru_majflt),
-		 "nswap",flocons(u.ru_nswap),
-		 "inblock",flocons(u.ru_inblock),
-		 "oublock",flocons(u.ru_oublock),
-		 "msgsnd",flocons(u.ru_msgsnd),
-		 "msgrcv",flocons(u.ru_msgrcv),
-		 "nsignals",flocons(u.ru_nsignals),
-		 "nvcsw",flocons(u.ru_nvcsw),
-		 "nivcsw",flocons(u.ru_nivcsw),
-		 NULL));}
+                 TV_FRAC(u.ru_utime)),
+         "stime",flocons(((double)u.ru_stime.tv_sec) +
+                 TV_FRAC(u.ru_stime)),
+         "maxrss",flocons(u.ru_maxrss),
+         "ixrss",flocons(u.ru_ixrss),
+         "idrss",flocons(u.ru_idrss),
+         "isrss",flocons(u.ru_isrss),
+         "minflt",flocons(u.ru_minflt),
+         "majflt",flocons(u.ru_majflt),
+         "nswap",flocons(u.ru_nswap),
+         "inblock",flocons(u.ru_inblock),
+         "oublock",flocons(u.ru_oublock),
+         "msgsnd",flocons(u.ru_msgsnd),
+         "msgrcv",flocons(u.ru_msgrcv),
+         "nsignals",flocons(u.ru_nsignals),
+         "nvcsw",flocons(u.ru_nvcsw),
+         "nivcsw",flocons(u.ru_nivcsw),
+         NULL));}
 
 #endif
 
@@ -800,14 +822,14 @@ LISP llast_win32_errmsg(DWORD status)
  char buffer[256];
  msgcode = (status == 0) ? GetLastError() : status;
  len = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-	                 FORMAT_MESSAGE_IGNORE_INSERTS |
-					 FORMAT_MESSAGE_MAX_WIDTH_MASK,
-	                 0,
-					 msgcode,
-					 0, /* what language? */
-					 buffer,
-					 sizeof(buffer),
-					 NULL);
+                     FORMAT_MESSAGE_IGNORE_INSERTS |
+                     FORMAT_MESSAGE_MAX_WIDTH_MASK,
+                     0,
+                     msgcode,
+                     0, /* what language? */
+                     buffer,
+                     sizeof(buffer),
+                     NULL);
  if (len)
    return(strcons(len,buffer));
  else
@@ -855,7 +877,7 @@ void  opendir_gc_free(LISP v)
  if ((d = get_opendir(v,0)))
    {FindClose(d->h);
     free(d);
-	CAR(v) = NIL;}}
+    CAR(v) = NIL;}}
 
 LISP l_readdir(LISP v)
 {long iflag;
@@ -864,8 +886,8 @@ LISP l_readdir(LISP v)
  iflag = no_interrupt(1);
  if (d->count > 0)
    if (!FindNextFile(d->h,&d->s))
-	 if (GetLastError() == ERROR_NO_MORE_FILES)
-	   {no_interrupt(1);
+     if (GetLastError() == ERROR_NO_MORE_FILES)
+       {no_interrupt(1);
         return(NIL);}
  ++d->count;
  no_interrupt(iflag);
@@ -878,17 +900,18 @@ void opendir_prin1(LISP ptr,struct gen_printio *f)
 
 #endif
 
-LISP file_times(LISP fname)
-{struct stat st;
- int iflag,ret;
- iflag = no_interrupt(1);
- ret = stat(get_c_string(fname),&st);
- no_interrupt(iflag);
- if (ret)
-   return(NIL);
- else
-   return(cons(flocons((double)st.st_ctime),
-	       cons(flocons((double)st.st_mtime),NIL)));}
+LISP file_times(LISP fname) {
+    struct stat st;
+    int iflag, ret;
+    iflag = no_interrupt(1);
+    ret = stat(get_c_string(fname), &st);
+    no_interrupt(iflag);
+    if (ret)
+        return (NIL);
+    else
+        return (cons(flocons((double) st.st_ctime),
+                     cons(flocons((double) st.st_mtime), NIL)));
+}
 
 #if defined(unix) || defined(WIN32)
 
@@ -917,18 +940,18 @@ LISP decode_st_moden(mode_t mode)
 
 LISP encode_st_mode(LISP l)
 {return(flocons(assemble_options(l,
-				 "SUID",S_ISUID,
-				 "SGID",S_ISGID,
-				 "RUSR",S_IRUSR,
-				 "WUSR",S_IWUSR,
-				 "XUSR",S_IXUSR,
-				 "RGRP",S_IRGRP,
-				 "WGRP",S_IWGRP,
-				 "XGRP",S_IXGRP,
-				 "ROTH",S_IROTH,
-				 "WOTH",S_IWOTH,
-				 "XOTH",S_IXOTH,
-				 NULL)));}
+                 "SUID",S_ISUID,
+                 "SGID",S_ISGID,
+                 "RUSR",S_IRUSR,
+                 "WUSR",S_IWUSR,
+                 "XUSR",S_IXUSR,
+                 "RGRP",S_IRGRP,
+                 "WGRP",S_IWGRP,
+                 "XGRP",S_IXGRP,
+                 "ROTH",S_IROTH,
+                 "WOTH",S_IWOTH,
+                 "XOTH",S_IXOTH,
+                 NULL)));}
 #endif
 
 #ifdef WIN32
@@ -945,10 +968,10 @@ LISP decode_st_moden(int mode)
 
 LISP encode_st_mode(LISP l)
 {return(flocons(assemble_options(l,
-				 "RUSR",_S_IREAD,
-				 "WUSR",_S_IWRITE,
-				 "XUSR",_S_IEXEC,
-				 NULL)));}
+                 "RUSR",_S_IREAD,
+                 "WUSR",_S_IWRITE,
+                 "XUSR",_S_IEXEC,
+                 NULL)));}
 #endif
 
 LISP decode_st_mode(LISP value)
@@ -956,26 +979,26 @@ LISP decode_st_mode(LISP value)
 
 LISP decode_stat(struct stat *s)
 {return(symalist("dev",flocons(s->st_dev),
-		 "ino",flocons(s->st_ino),
-		 "mode",decode_st_moden(s->st_mode),
-		 "nlink",flocons(s->st_nlink),
-		 "uid",flocons(s->st_uid),
-		 "gid",flocons(s->st_gid),
-		 "rdev",flocons(s->st_rdev),
-		 "size",flocons(s->st_size),
-		 "atime",flocons((double)s->st_atime),
-		 "mtime",flocons((double)s->st_mtime),
-		 "ctime",flocons((double)s->st_ctime),
+         "ino",flocons(s->st_ino),
+         "mode",decode_st_moden(s->st_mode),
+         "nlink",flocons(s->st_nlink),
+         "uid",flocons(s->st_uid),
+         "gid",flocons(s->st_gid),
+         "rdev",flocons(s->st_rdev),
+         "size",flocons(s->st_size),
+         "atime",flocons((double)s->st_atime),
+         "mtime",flocons((double)s->st_mtime),
+         "ctime",flocons((double)s->st_ctime),
 #if defined(unix)
-		 "blksize",flocons(s->st_blksize),
-		 "blocks",flocons(s->st_blocks),
+         "blksize",flocons(s->st_blksize),
+         "blocks",flocons(s->st_blocks),
 #endif
 #if defined(__osf__)
-		 "flags",flocons(s->st_flags),
-		 "gen",flocons(s->st_gen),
+         "flags",flocons(s->st_flags),
+         "gen",flocons(s->st_gen),
 #endif
-		 NULL));}
-	      
+         NULL));}
+
 
 LISP g_stat(LISP fname,int (*fcn)(const char *,struct stat *))
 {struct stat st;
@@ -1011,8 +1034,8 @@ LISP l_lstat(LISP fname)
 
 LISP l_fnmatch(LISP pat,LISP str,LISP flgs)
 {if (fnmatch(get_c_string(pat),
-	     get_c_string(str),
-	     0))
+         get_c_string(str),
+         0))
    return(NIL);
  else
    return(a_true_value());}
@@ -1050,15 +1073,15 @@ LISP lfchmod(LISP file,LISP mode)
 
 LISP encode_open_flags(LISP l)
 {return(flocons(assemble_options(l,
-				 "NONBLOCK",O_NONBLOCK,
-				 "APPEND",O_APPEND,
-				 "RDONLY",O_RDONLY,
-				 "WRONLY",O_WRONLY,
-				 "RDWR",O_RDWR,
-				 "CREAT",O_CREAT,
-				 "TRUNC",O_TRUNC,
-				 "EXCL",O_EXCL,
-				 NULL)));}
+                 "NONBLOCK",O_NONBLOCK,
+                 "APPEND",O_APPEND,
+                 "RDONLY",O_RDONLY,
+                 "WRONLY",O_WRONLY,
+                 "RDWR",O_RDWR,
+                 "CREAT",O_CREAT,
+                 "TRUNC",O_TRUNC,
+                 "EXCL",O_EXCL,
+                 NULL)));}
 
 int get_fd(LISP ptr)
 {if TYPEP(ptr,tc_c_file)
@@ -1096,32 +1119,34 @@ LISP lF_GETLK(LISP fd,LISP ltype,LISP whence,LISP start,LISP len)
 
 #endif
 
-LISP delete_file(LISP fname)
-{int iflag,ret;
- iflag = no_interrupt(1);
+LISP delete_file(LISP fname) {
+    int iflag, ret;
+    iflag = no_interrupt(1);
 #ifdef VMS
- ret = delete(get_c_string(fname));
+    ret = delete(get_c_string(fname));
 #else
- ret = unlink(get_c_string(fname));
+    ret = unlink(get_c_string(fname));
 #endif
- no_interrupt(iflag);
- if (ret)
-   return(strcons(-1,last_c_errmsg(-1)));
- else
-   return(NIL);}
+    no_interrupt(iflag);
+    if (ret)
+        return (strcons(-1, last_c_errmsg(-1)));
+    else
+        return (NIL);
+}
 
-LISP utime2str(LISP u)
-{time_t bt;
- struct tm *btm;
- char sbuff[100];
- bt = get_c_long(u);
- if ((btm = localtime(&bt)))
-   {sprintf(sbuff,"%04d%02d%02d%02d%02d%02d%02d",
-	    btm->tm_year+1900,btm->tm_mon + 1,btm->tm_mday,
-	    btm->tm_hour,btm->tm_min,btm->tm_sec,0);
-    return(strcons(strlen(sbuff),sbuff));}
- else
-   return(NIL);}
+LISP utime2str(LISP u) {
+    time_t bt;
+    struct tm *btm;
+    char sbuff[100];
+    bt = get_c_long(u);
+    if ((btm = localtime(&bt))) {
+        sprintf(sbuff, "%04d%02d%02d%02d%02d%02d%02d",
+                btm->tm_year + 1900, btm->tm_mon + 1, btm->tm_mday,
+                btm->tm_hour, btm->tm_min, btm->tm_sec, 0);
+        return (strcons(strlen(sbuff), sbuff));
+    } else
+        return (NIL);
+}
 
 #ifdef WIN32
 LISP win32_debug(void)
@@ -1193,23 +1218,23 @@ LISP lset_logical(LISP name,LISP value,LISP table,LISP attributes)
  long status,iflag;
  iflag = no_interrupt(1);
  status = lib$set_logical(set_dsc_cst(&dname,get_c_string(name)),
-			  NULLP(value) ? 0 : set_dsc_cst(&dvalue,
-							 get_c_string(value)),
-			  NULLP(table) ? 0 : set_dsc_cst(&dtable,
-							 get_c_string(table)),
-			  assemble_options(attributes,
-					   "NO_ALIAS",LNM$M_NO_ALIAS,
-					   "CONFINE",LNM$M_CONFINE,
-					   "CRELOG",LNM$M_CRELOG,
-					   "TABLE",LNM$M_TABLE,
-					   "CONCEALED",LNM$M_CONCEALED,
-					   "TERMINAL",LNM$M_TERMINAL,
-					   "EXISTS",LNM$M_EXISTS,
-					   "SHAREABLE",LNM$M_SHAREABLE,
-					   "CREATE_IF",LNM$M_CREATE_IF,
-					   "CASE_BLIND",LNM$M_CASE_BLIND,
-					   NULL),
-			  0);
+              NULLP(value) ? 0 : set_dsc_cst(&dvalue,
+                             get_c_string(value)),
+              NULLP(table) ? 0 : set_dsc_cst(&dtable,
+                             get_c_string(table)),
+              assemble_options(attributes,
+                       "NO_ALIAS",LNM$M_NO_ALIAS,
+                       "CONFINE",LNM$M_CONFINE,
+                       "CRELOG",LNM$M_CRELOG,
+                       "TABLE",LNM$M_TABLE,
+                       "CONCEALED",LNM$M_CONCEALED,
+                       "TERMINAL",LNM$M_TERMINAL,
+                       "EXISTS",LNM$M_EXISTS,
+                       "SHAREABLE",LNM$M_SHAREABLE,
+                       "CREATE_IF",LNM$M_CREATE_IF,
+                       "CASE_BLIND",LNM$M_CASE_BLIND,
+                       NULL),
+              0);
  if (status != SS$_NORMAL)
    err_vms(status);
  no_interrupt(iflag);
@@ -1217,49 +1242,52 @@ LISP lset_logical(LISP name,LISP value,LISP table,LISP attributes)
 
 #endif
 
-LISP lgetenv(LISP var)
-{char *str;
- if ((str = getenv(get_c_string(var))))
-   return(strcons(strlen(str),str));
- else
-   return(NIL);}
+LISP lgetenv(LISP var) {
+    char *str;
+    if ((str = getenv(get_c_string(var))))
+        return (strcons(strlen(str), str));
+    else
+        return (NIL);
+}
 
-LISP unix_time(void)
-{return(flocons((double)time(NULL)));}
+LISP unix_time(void) { return (flocons((double) time(NULL))); }
 
-LISP unix_ctime(LISP value)
-{time_t b;
- char *buff,*p;
- if NNULLP(value)
-   b = get_c_long(value);
- else
-   time(&b);
- if ((buff = ctime(&b)))
-   {if ((p = strchr(buff,'\n'))) *p = 0;
-    return(strcons(strlen(buff),buff));}
- else
-   return(NIL);}
+LISP unix_ctime(LISP value) {
+    time_t b;
+    char *buff, *p;
+    if NNULLP(value)
+        b = get_c_long(value);
+    else
+        time(&b);
+    if ((buff = ctime(&b))) {
+        if ((p = strchr(buff, '\n'))) *p = 0;
+        return (strcons(strlen(buff), buff));
+    } else
+        return (NIL);
+}
 
 LISP http_date(LISP value)
-     /* returns the internet standard RFC 1123 format */
-{time_t b;
- char buff[256];
- struct tm *t;
- if NNULLP(value)
-   b = get_c_long(value);
- else
-   time(&b);
- if (!(t = gmtime(&b))) return(NIL);
- (sprintf
-  (buff,"%s, %02d %s %04d %02d:%02d:%02d GMT",
-   &"Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat"[t->tm_wday*4],
-   t->tm_mday,
-   &"Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec"[t->tm_mon*4],
-   t->tm_year+1900,
-   t->tm_hour,
-   t->tm_min,
-   t->tm_sec));
- return(strcons(strlen(buff),buff));}
+/* returns the internet standard RFC 1123 format */
+{
+    time_t b;
+    char buff[256];
+    struct tm *t;
+    if NNULLP(value)
+        b = get_c_long(value);
+    else
+        time(&b);
+    if (!(t = gmtime(&b))) return (NIL);
+    (sprintf
+            (buff, "%s, %02d %s %04d %02d:%02d:%02d GMT",
+             &"Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat"[t->tm_wday * 4],
+             t->tm_mday,
+             &"Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec"[t->tm_mon * 4],
+             t->tm_year + 1900,
+             t->tm_hour,
+             t->tm_min,
+             t->tm_sec));
+    return (strcons(strlen(buff), buff));
+}
 
 #if defined(__osf__)
 
@@ -1319,163 +1347,173 @@ long usleep(unsigned int winks)
  return(nanosleep(&x,NULL));}
 #endif
 
-LISP lsleep(LISP ns)
-{double val = get_c_double(ns);
+LISP lsleep(LISP ns) {
+    double val = get_c_double(ns);
 #ifdef unix
- usleep((unsigned int)(val * 1.0e6));
+    usleep((unsigned int)(val * 1.0e6));
 #else
 #ifdef WIN32
- Sleep((DWORD)(val * 1000));
+    Sleep((DWORD)(val * 1000));
 #else
- sleep((unsigned int)val);
+    sleep((unsigned int) val);
 #endif
 #endif
- return(NIL);}
+    return (NIL);
+}
 
-LISP url_encode(LISP in)
-{int spaces=0,specials=0,regulars=0,c;
- char *str = get_c_string(in),*p,*r;
- LISP out;
- for(p=str,spaces=0,specials=0,regulars=0;(c = *p);++p)
-   if (c == ' ') ++spaces;
-   else if (!(isalnum(c) || strchr("*-._@",c))) ++specials;
-   else ++regulars;
- if ((spaces == 0) && (specials == 0))
-   return(in);
- out = strcons(spaces + regulars + specials * 3,NULL);
- for(p=str,r=get_c_string(out);(c = *p);++p)
-   if (c == ' ')
-     *r++ = '+';
-   else if (!(isalnum(c) || strchr("*-._@",c)))
-     {sprintf(r,"%%%02X",c & 0xFF);
-      r += 3;}
-   else
-     *r++ = c;
- *r = 0;
- return(out);}
+LISP url_encode(LISP in) {
+    int spaces = 0, specials = 0, regulars = 0, c;
+    char *str = get_c_string(in), *p, *r;
+    LISP out;
+    for (p = str, spaces = 0, specials = 0, regulars = 0; (c = *p); ++p)
+        if (c == ' ') ++spaces;
+        else if (!(isalnum(c) || strchr("*-._@", c))) ++specials;
+        else ++regulars;
+    if ((spaces == 0) && (specials == 0))
+        return (in);
+    out = strcons(spaces + regulars + specials * 3, NULL);
+    for (p = str, r = get_c_string(out); (c = *p); ++p)
+        if (c == ' ')
+            *r++ = '+';
+        else if (!(isalnum(c) || strchr("*-._@", c))) {
+            sprintf(r, "%%%02X", c & 0xFF);
+            r += 3;
+        } else
+            *r++ = c;
+    *r = 0;
+    return (out);
+}
 
-LISP url_decode(LISP in)
-{int pluses=0,specials=0,regulars=0,c,j;
- char *str = get_c_string(in),*p,*r;
- LISP out;
- for(p=str,pluses=0,specials=0,regulars=0;(c = *p);++p)
-   if (c == '+') ++pluses;
-   else if (c == '%')
-     {if (isxdigit(p[1]) && isxdigit(p[2]))
-	++specials;
-      else
-	return(NIL);}
-   else
-     ++regulars;
- if ((pluses == 0) && (specials == 0))
-   return(in);
- out = strcons(regulars + pluses + specials,NULL);
- for(p=str,r=get_c_string(out);(c = *p);++p)
-   if (c == '+')
-     *r++ = ' ';
-   else if (c == '%')
-     {for(*r = 0,j=1;j<3;++j)
-	*r = *r * 16 + ((isdigit(p[j]))
-			? (p[j] - '0')
-			: (toupper(p[j]) - 'A' + 10));
-      p += 2;
-      ++r;}
-   else
-     *r++ = c;
- *r = 0;
- return(out);}
+LISP url_decode(LISP in) {
+    int pluses = 0, specials = 0, regulars = 0, c, j;
+    char *str = get_c_string(in), *p, *r;
+    LISP out;
+    for (p = str, pluses = 0, specials = 0, regulars = 0; (c = *p); ++p)
+        if (c == '+') ++pluses;
+        else if (c == '%') {
+            if (isxdigit(p[1]) && isxdigit(p[2]))
+                ++specials;
+            else
+                return (NIL);
+        } else
+            ++regulars;
+    if ((pluses == 0) && (specials == 0))
+        return (in);
+    out = strcons(regulars + pluses + specials, NULL);
+    for (p = str, r = get_c_string(out); (c = *p); ++p)
+        if (c == '+')
+            *r++ = ' ';
+        else if (c == '%') {
+            for (*r = 0, j = 1; j < 3; ++j)
+                *r = *r * 16 + ((isdigit(p[j]))
+                                ? (p[j] - '0')
+                                : (toupper(p[j]) - 'A' + 10));
+            p += 2;
+            ++r;
+        } else
+            *r++ = c;
+    *r = 0;
+    return (out);
+}
 
-LISP html_encode(LISP in)
-{long j,n,m;
- char *str,*ptr;
- LISP out;
- switch(TYPE(in))
-   {case tc_string:
-    case tc_symbol:
-      break;
-    default:
-      return(in);}
- str = get_c_string(in);
- n = strlen(str);
- for(j=0,m=0;j < n; ++j)
-   switch(str[j])
-     {case '>':
-      case '<':
-	m += 4;
-	break;
-      case '&':
-	m += 5;
-	break;
-      default:
-	++m;}
- if (n == m) return(in);
- out = strcons(m,NULL);
- for(j=0,ptr=get_c_string(out);j < n; ++j)
-   switch(str[j])
-     {case '>':
-	strcpy(ptr,"&gt;");
-	ptr += strlen(ptr);
-	break;
-      case '<':
-	strcpy(ptr,"&lt;");
-	ptr += strlen(ptr);
-	break;
-      case '&':
-	strcpy(ptr,"&amp;");
-	ptr += strlen(ptr);
-	break;
-      default:
-	*ptr++ = str[j];}
- return(out);}
+LISP html_encode(LISP in) {
+    long j, n, m;
+    char *str, *ptr;
+    LISP out;
+    switch (TYPE(in)) {
+        case tc_string:
+        case tc_symbol:
+            break;
+        default:
+            return (in);
+    }
+    str = get_c_string(in);
+    n = strlen(str);
+    for (j = 0, m = 0; j < n; ++j)
+        switch (str[j]) {
+            case '>':
+            case '<':
+                m += 4;
+                break;
+            case '&':
+                m += 5;
+                break;
+            default:
+                ++m;
+        }
+    if (n == m) return (in);
+    out = strcons(m, NULL);
+    for (j = 0, ptr = get_c_string(out); j < n; ++j)
+        switch (str[j]) {
+            case '>':
+                strcpy(ptr, "&gt;");
+                ptr += strlen(ptr);
+                break;
+            case '<':
+                strcpy(ptr, "&lt;");
+                ptr += strlen(ptr);
+                break;
+            case '&':
+                strcpy(ptr, "&amp;");
+                ptr += strlen(ptr);
+                break;
+            default:
+                *ptr++ = str[j];
+        }
+    return (out);
+}
 
-LISP html_decode(LISP in)
-{return(in);}
+LISP html_decode(LISP in) { return (in); }
 
-LISP lgets(LISP file,LISP buffn)
-{FILE *f;
- int iflag;
- long n;
- char buffer[2048],*ptr;
- f = get_c_file(file,stdin);
- if NULLP(buffn)
-   n = sizeof(buffer);
- else if ((n = get_c_long(buffn)) < 0)
-   err("size must be >= 0",buffn);
- else if (n > sizeof(buffer))
-   err("not handling buffer of size",listn(2,buffn,flocons(sizeof(buffer))));
- iflag = no_interrupt(1);
- if ((ptr = fgets(buffer,n,f)))
-   {no_interrupt(iflag);
-    return(strcons(strlen(buffer),buffer));}
- no_interrupt(iflag);
- return(NIL);}
+LISP lgets(LISP file, LISP buffn) {
+    FILE *f;
+    int iflag;
+    long n;
+    char buffer[2048], *ptr;
+    f = get_c_file(file, stdin);
+    if NULLP(buffn)
+        n = sizeof(buffer);
+    else if ((n = get_c_long(buffn)) < 0)
+        err("size must be >= 0", buffn);
+    else if (n > sizeof(buffer))
+        err("not handling buffer of size", listn(2, buffn, flocons(sizeof(buffer))));
+    iflag = no_interrupt(1);
+    if ((ptr = fgets(buffer, n, f))) {
+        no_interrupt(iflag);
+        return (strcons(strlen(buffer), buffer));
+    }
+    no_interrupt(iflag);
+    return (NIL);
+}
 
-LISP readline(LISP file)
-{LISP result;
- char *start,*ptr;
- result = lgets(file,NIL);
- if NULLP(result) return(NIL);
- start = get_c_string(result);
- if ((ptr = strchr(start,'\n')))
-   {*ptr = 0;
-    /* we also change the dim, because otherwise our equal? function
-       is confused. What we really need are arrays with fill pointers. */
-    result->storage_as.string.dim = ptr - start;
-    return(result);}
- else
-   /* we should be doing lgets until we  get a string with a newline or NIL,
-      and then append the results */
-   return(result);}
+LISP readline(LISP file) {
+    LISP result;
+    char *start, *ptr;
+    result = lgets(file, NIL);
+    if NULLP(result) return (NIL);
+    start = get_c_string(result);
+    if ((ptr = strchr(start, '\n'))) {
+        *ptr = 0;
+        /* we also change the dim, because otherwise our equal? function
+           is confused. What we really need are arrays with fill pointers. */
+        result->storage_as.string.dim = ptr - start;
+        return (result);
+    } else
+        /* we should be doing lgets until we  get a string with a newline or NIL,
+           and then append the results */
+        return (result);
+}
 
 #ifndef WIN32
 
-LISP l_chown(LISP path,LISP uid,LISP gid)
-{long iflag;
- iflag = no_interrupt(1);
- if (chown(get_c_string(path),get_c_long(uid),get_c_long(gid)))
-   err("chown",cons(path,llast_c_errmsg(-1)));
- no_interrupt(iflag);
- return(NIL);}
+LISP l_chown(LISP path, LISP uid, LISP gid) {
+    long iflag;
+    iflag = no_interrupt(1);
+    if (chown(get_c_string(path), get_c_long(uid), get_c_long(gid)))
+        err("chown", cons(path, llast_c_errmsg(-1)));
+    no_interrupt(iflag);
+    return (NIL);
+}
 
 #endif
 
@@ -1494,15 +1532,15 @@ LISP l_lchown(LISP path,LISP uid,LISP gid)
 
 LISP popen_l(LISP name,LISP how)
 {return(fopen_cg(popen,
-		 get_c_string(name),
-		 NULLP(how) ? "r" : get_c_string(how)));}
+         get_c_string(name),
+         NULLP(how) ? "r" : get_c_string(how)));}
 
 /* note: if the user fails to call pclose then the gc is going
          to utilize fclose, which can result in a <defunct>
-	 process laying around. However, we don't want to
-	 modify file_gc_free nor add a new datatype.
-	 So beware.
-	 */
+     process laying around. However, we don't want to
+     modify file_gc_free nor add a new datatype.
+     So beware.
+     */
 LISP pclose_l(LISP ptr)
 {FILE *f = get_c_file(ptr,NULL);
  long iflag = no_interrupt(1);
@@ -1519,236 +1557,251 @@ LISP pclose_l(LISP ptr)
 
 #endif
 
-LISP so_init_name(LISP fname,LISP iname)
-{LISP init_name;
- if NNULLP(iname)
-   init_name = iname;
- else
-   {init_name = car(last(lstrbreakup(fname,cintern("/"))));
+LISP so_init_name(LISP fname, LISP iname) {
+    LISP init_name;
+    if NNULLP(iname)
+        init_name = iname;
+    else {
+        init_name = car(last(lstrbreakup(fname, cintern("/"))));
 #if !defined(VMS)
-    init_name = lstrunbreakup(butlast(lstrbreakup(init_name,cintern("."))),
-			      cintern("."));
+        init_name = lstrunbreakup(butlast(lstrbreakup(init_name, cintern("."))),
+                                  cintern("."));
 #endif
-    init_name = string_append(listn(2,cintern("init_"),init_name));}
- return(intern(init_name));}
+        init_name = string_append(listn(2, cintern("init_"), init_name));
+    }
+    return (intern(init_name));
+}
 
-LISP so_ext(LISP fname)
-{char *ext = ".so";
- LISP lext;
+LISP so_ext(LISP fname) {
+    char *ext = ".so";
+    LISP lext;
 #if defined(hpux)
- ext = ".sl";
+    ext = ".sl";
 #endif
 #if defined(vms)
- ext = "";
+    ext = "";
 #endif
 #if defined(WIN32)
- ext = ".dll";
+    ext = ".dll";
 #endif
- lext = strcons(strlen(ext),ext);
- if NULLP(fname)
-   return(lext);
- else
-   return(string_append(listn(2,fname,lext)));}
+    lext = strcons(strlen(ext), ext);
+    if NULLP(fname)
+        return (lext);
+    else
+        return (string_append(listn(2, fname, lext)));
+}
 
-LISP load_so(LISP fname,LISP iname)
-     /* note: error cases can leak memory in this procedure. */
-{LISP init_name;
- void (*fcn)(void) = NULL;
+LISP load_so(LISP fname, LISP iname)
+/* note: error cases can leak memory in this procedure. */
+{
+    LISP init_name;
+    void (*fcn)(void) = NULL;
 #if defined(__osf__) || defined(sun) || defined(linux) || defined(sgi)
- void *handle;
+    void *handle;
 #endif
 #if defined(hpux)
- shl_t handle;
+    shl_t handle;
 #endif
 #if defined(VMS)
- struct dsc$descriptor filename,symbol,defaultd;
- long status;
- LISP dsym;
+    struct dsc$descriptor filename,symbol,defaultd;
+    long status;
+    LISP dsym;
 #endif
 #ifdef WIN32
- HINSTANCE handle;
+    HINSTANCE handle;
 #endif
- long iflag;
- init_name = so_init_name(fname,iname);
- iflag = no_interrupt(1);
- if (siod_verbose_check(3))
-   {put_st("so-loading ");
-    put_st(get_c_string(fname));
-    put_st("\n");}
+    long iflag;
+    init_name = so_init_name(fname, iname);
+    iflag = no_interrupt(1);
+    if (siod_verbose_check(3)) {
+        put_st("so-loading ");
+        put_st(get_c_string(fname));
+        put_st("\n");
+    }
 #if defined(__osf__) || defined(sun) || defined(linux) || defined(sgi)
 #if !defined(__osf__)
- /* Observed bug: values of LD_LIBRARY_PATH established with putenv
-    -after- a process has started are ignored. Work around follows. */
- if (access(get_c_string(fname),F_OK))
-   fname = string_append(listn(3,
-			       strcons(-1,siod_lib),
-			       strcons(-1,"/"),
-			       fname));
+    /* Observed bug: values of LD_LIBRARY_PATH established with putenv
+       -after- a process has started are ignored. Work around follows. */
+    if (access(get_c_string(fname),F_OK))
+      fname = string_append(listn(3,
+                      strcons(-1,siod_lib),
+                      strcons(-1,"/"),
+                      fname));
 #endif
- if (!(handle = dlopen(get_c_string(fname),RTLD_LAZY)))
-   err(dlerror(),fname);
- if (!(fcn = dlsym(handle,get_c_string(init_name))))
-   err(dlerror(),init_name);
+    if (!(handle = dlopen(get_c_string(fname),RTLD_LAZY)))
+      err(dlerror(),fname);
+    if (!(fcn = dlsym(handle,get_c_string(init_name))))
+      err(dlerror(),init_name);
 #endif
 #if defined(hpux)
- if (access(get_c_string(fname),F_OK))
-   fname = string_append(listn(3,
-			       strcons(-1,siod_lib),
-			       strcons(-1,"/"),
-			       fname));
- if (!(handle = shl_load(get_c_string(fname),BIND_DEFERRED,0L)))
-   err("shl_load",llast_c_errmsg(errno));
- if (shl_findsym(&handle,get_c_string(init_name),TYPE_PROCEDURE,&fcn))
-   err("shl_findsym",llast_c_errmsg(errno));
+    if (access(get_c_string(fname),F_OK))
+      fname = string_append(listn(3,
+                      strcons(-1,siod_lib),
+                      strcons(-1,"/"),
+                      fname));
+    if (!(handle = shl_load(get_c_string(fname),BIND_DEFERRED,0L)))
+      err("shl_load",llast_c_errmsg(errno));
+    if (shl_findsym(&handle,get_c_string(init_name),TYPE_PROCEDURE,&fcn))
+      err("shl_findsym",llast_c_errmsg(errno));
 #endif
 #if defined(VMS)
- dsym = cintern("*require-so-dir*");
- if (NNULLP(symbol_boundp(dsym,NIL)) && NNULLP(symbol_value(dsym,NIL)))
-   set_dsc_cst(&defaultd,get_c_string(symbol_value(dsym,NIL)));
- else
-   dsym = NIL;
- status = lib$find_image_symbol(set_dsc_cst(&filename,
-					    get_c_string(fname)),
-				set_dsc_cst(&symbol,
-					    get_c_string(init_name)),
-				&fcn,
-				NULLP(dsym) ? 0 : &defaultd);
- if (status != SS$_NORMAL)
-   err_vms(status);
+    dsym = cintern("*require-so-dir*");
+    if (NNULLP(symbol_boundp(dsym,NIL)) && NNULLP(symbol_value(dsym,NIL)))
+      set_dsc_cst(&defaultd,get_c_string(symbol_value(dsym,NIL)));
+    else
+      dsym = NIL;
+    status = lib$find_image_symbol(set_dsc_cst(&filename,
+                           get_c_string(fname)),
+                   set_dsc_cst(&symbol,
+                           get_c_string(init_name)),
+                   &fcn,
+                   NULLP(dsym) ? 0 : &defaultd);
+    if (status != SS$_NORMAL)
+      err_vms(status);
 #endif
 #ifdef WIN32
- fname = string_append(listn(2,
-			       strcons(-1,siod_lib),
-			       fname));
- if (!(handle = LoadLibraryEx(get_c_string(fname),
-                              NULL,
-                              LOAD_WITH_ALTERED_SEARCH_PATH)))
-   err("LoadLibrary",llast_win32_errmsg(0));
- if (!(fcn = (LPVOID)GetProcAddress(handle,get_c_string(init_name))))
-   err("GetProcAddress",llast_win32_errmsg(0));
+    fname = string_append(listn(2,
+                      strcons(-1,siod_lib),
+                      fname));
+    if (!(handle = LoadLibraryEx(get_c_string(fname),
+                                 NULL,
+                                 LOAD_WITH_ALTERED_SEARCH_PATH)))
+      err("LoadLibrary",llast_win32_errmsg(0));
+    if (!(fcn = (LPVOID)GetProcAddress(handle,get_c_string(init_name))))
+      err("GetProcAddress",llast_win32_errmsg(0));
 #endif
- if (fcn)
-   (*fcn)();
- else
-   err("did not load function",init_name);
- no_interrupt(iflag);
- if (siod_verbose_check(3))
-   put_st("done.\n");
- return(init_name);}
+    if (fcn)
+        (*fcn)();
+    else
+        err("did not load function", init_name);
+    no_interrupt(iflag);
+    if (siod_verbose_check(3))
+        put_st("done.\n");
+    return (init_name);
+}
 
-LISP require_so(LISP fname)
-{LISP init_name;
- init_name = so_init_name(fname,NIL);
- if (NULLP(symbol_boundp(init_name,NIL)) ||
-     NULLP(symbol_value(init_name,NIL)))
-   {load_so(fname,NIL);
-    return(setvar(init_name,a_true_value(),NIL));}
- else
-   return(NIL);}
+LISP require_so(LISP fname) {
+    LISP init_name;
+    init_name = so_init_name(fname, NIL);
+    if (NULLP(symbol_boundp(init_name, NIL)) ||
+        NULLP(symbol_value(init_name, NIL))) {
+        load_so(fname, NIL);
+        return (setvar(init_name, a_true_value(), NIL));
+    } else
+        return (NIL);
+}
 
-LISP siod_lib_l(void)
-{return(rintern(siod_lib));}
+LISP siod_lib_l(void) { return (rintern(siod_lib)); }
 
 
-LISP ccall_catch_1(LISP (*fcn)(void *),void *arg)
-{LISP val;
- val = (*fcn)(arg);
- catch_framep = catch_framep->next;
- return(val);}
+LISP ccall_catch_1(LISP (*fcn)(void *), void *arg) {
+    LISP val;
+    val = (*fcn)(arg);
+    catch_framep = catch_framep->next;
+    return (val);
+}
 
-LISP ccall_catch(LISP tag,LISP (*fcn)(void *),void *arg)
-{struct catch_frame frame;
- int k;
- frame.tag = tag;
- frame.next = catch_framep;
- k = setjmp(frame.cframe);
- catch_framep = &frame;
- if (k == 2)
-   {catch_framep = frame.next;
-    return(frame.retval);}
- return(ccall_catch_1(fcn,arg));}
+LISP ccall_catch(LISP tag, LISP (*fcn)(void *), void *arg) {
+    struct catch_frame frame;
+    int k;
+    frame.tag = tag;
+    frame.next = catch_framep;
+    k = setjmp(frame.cframe);
+    catch_framep = &frame;
+    if (k == 2) {
+        catch_framep = frame.next;
+        return (frame.retval);
+    }
+    return (ccall_catch_1(fcn, arg));
+}
 
-LISP decode_tm(struct tm *t)
-{return(symalist("sec",flocons(t->tm_sec),
-		 "min",flocons(t->tm_min),
-		 "hour",flocons(t->tm_hour),
-		 "mday",flocons(t->tm_mday),
-		 "mon",flocons(t->tm_mon),
-		 "year",flocons(t->tm_year),
-		 "wday",flocons(t->tm_wday),
-		 "yday",flocons(t->tm_yday),
-		 "isdst",flocons(t->tm_isdst),
+LISP decode_tm(struct tm *t) {
+    return (symalist("sec", flocons(t->tm_sec),
+                     "min", flocons(t->tm_min),
+                     "hour", flocons(t->tm_hour),
+                     "mday", flocons(t->tm_mday),
+                     "mon", flocons(t->tm_mon),
+                     "year", flocons(t->tm_year),
+                     "wday", flocons(t->tm_wday),
+                     "yday", flocons(t->tm_yday),
+                     "isdst", flocons(t->tm_isdst),
 #if defined(__osf__)
-		 "gmtoff",flocons(t->__tm_gmtoff),
-		 "tm_zone",(t->__tm_zone) ? rintern(t->__tm_zone) : NIL,
+            "gmtoff",flocons(t->__tm_gmtoff),
+            "tm_zone",(t->__tm_zone) ? rintern(t->__tm_zone) : NIL,
 #endif
-		 NULL));}
+                     NULL));
+}
 
-LISP symalist(char *arg,...)
-{va_list args;
- LISP result,l,val;
- char *key;
- if (!arg) return(NIL);
- va_start(args,arg);
- val = va_arg(args,LISP);
- result = cons(cons(cintern(arg),val),NIL);
- l = result;
- while((key = va_arg(args,char *)))
-   {val = va_arg(args,LISP);
-    CDR(l) = cons(cons(cintern(key),val),NIL);
-    l = CDR(l);}
- va_end(args);
- return(result);}
+LISP symalist(char *arg, ...) {
+    va_list args;
+    LISP result, l, val;
+    char *key;
+    if (!arg) return (NIL);
+    va_start(args, arg);
+    val = va_arg(args, LISP);
+    result = cons(cons(cintern(arg), val), NIL);
+    l = result;
+    while ((key = va_arg(args,char *)))
+    {
+        val = va_arg(args, LISP);
+        CDR(l) = cons(cons(cintern(key), val), NIL);
+        l = CDR(l);
+    }
+    va_end(args);
+    return (result);
+}
 
-void encode_tm(LISP alist,struct tm *t)
-{LISP val;
- val = cdr(assq(cintern("sec"),alist));
- t->tm_sec = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("min"),alist));
- t->tm_min = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("hour"),alist));
- t->tm_hour = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("mday"),alist));
- t->tm_mday = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("mon"),alist));
- t->tm_mon = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("year"),alist));
- t->tm_year = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("wday"),alist));
- t->tm_wday = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("yday"),alist));
- t->tm_yday = NULLP(val) ? 0 : get_c_long(val);
- val = cdr(assq(cintern("isdst"),alist));
- t->tm_isdst = NULLP(val) ? -1 : get_c_long(val);
+void encode_tm(LISP alist, struct tm *t) {
+    LISP val;
+    val = cdr(assq(cintern("sec"), alist));
+    t->tm_sec = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("min"), alist));
+    t->tm_min = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("hour"), alist));
+    t->tm_hour = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("mday"), alist));
+    t->tm_mday = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("mon"), alist));
+    t->tm_mon = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("year"), alist));
+    t->tm_year = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("wday"), alist));
+    t->tm_wday = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("yday"), alist));
+    t->tm_yday = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("isdst"), alist));
+    t->tm_isdst = NULLP(val) ? -1 : get_c_long(val);
 #if defined(__osf__)
- val = cdr(assq(cintern("gmtoff"),alist));
- t->__tm_gmtoff = NULLP(val) ? 0 : get_c_long(val);
+    val = cdr(assq(cintern("gmtoff"),alist));
+    t->__tm_gmtoff = NULLP(val) ? 0 : get_c_long(val);
 #endif
 }
 
-LISP llocaltime(LISP value)
-{time_t b;
- struct tm *t;
- if NNULLP(value)
-   b = get_c_long(value);
- else
-   time(&b);
- if ((t = localtime(&b)))
-   return(decode_tm(t));
- else
-   return(err("localtime",llast_c_errmsg(-1)));}
+LISP llocaltime(LISP value) {
+    time_t b;
+    struct tm *t;
+    if NNULLP(value)
+        b = get_c_long(value);
+    else
+        time(&b);
+    if ((t = localtime(&b)))
+        return (decode_tm(t));
+    else
+        return (err("localtime", llast_c_errmsg(-1)));
+}
 
-LISP lgmtime(LISP value)
-{time_t b;
- struct tm *t;
- if NNULLP(value)
-   b = get_c_long(value);
- else
-   time(&b);
- if ((t = gmtime(&b)))
-   return(decode_tm(t));
- else
-   return(err("gmtime",llast_c_errmsg(-1)));}
+LISP lgmtime(LISP value) {
+    time_t b;
+    struct tm *t;
+    if NNULLP(value)
+        b = get_c_long(value);
+    else
+        time(&b);
+    if ((t = gmtime(&b)))
+        return (decode_tm(t));
+    else
+        return (err("gmtime", llast_c_errmsg(-1)));
+}
 
 #if defined(unix) || defined(WIN32)
 LISP ltzset(void)
@@ -1756,12 +1809,13 @@ LISP ltzset(void)
  return(NIL);}
 #endif
 
-LISP lmktime(LISP alist)
-{struct tm tm;
- time_t t;
- encode_tm(alist,&tm);
- t = mktime(&tm);
- return(flocons((double)t));}
+LISP lmktime(LISP alist) {
+    struct tm tm;
+    time_t t;
+    encode_tm(alist, &tm);
+    t = mktime(&tm);
+    return (flocons((double) t));
+}
 
 #if defined(__osf__) || defined(SUN5) || defined(linux)
 
@@ -1772,7 +1826,7 @@ LISP lstrptime(LISP str,LISP fmt,LISP in)
    {
 #if defined(SUN5)
      /* SUN software incorrectly sets this to 0, but until further
-	analysis (such as by mktime) it is too early to conclude */
+    analysis (such as by mktime) it is too early to conclude */
      tm.tm_isdst = -1;
 #endif
      return(decode_tm(&tm));
@@ -1804,33 +1858,35 @@ LISP lstrftime(LISP fmt,LISP in)
 
 #endif
 
-LISP lchdir(LISP dir)
-{long iflag;
+LISP lchdir(LISP dir) {
+    long iflag;
 #ifdef unix
- FILE *f;
- int fd;
+    FILE *f;
+    int fd;
 #endif
- char *path;
- switch(TYPE(dir))
-   {case tc_c_file:
+    char *path;
+    switch (TYPE(dir)) {
+        case tc_c_file:
 #ifdef unix
-      f = get_c_file(dir,NULL);
-      fd = fileno(f);
-      iflag = no_interrupt(1);
-      if (fchdir(fd))
-	return(err("fchdir",llast_c_errmsg(-1)));
-      no_interrupt(iflag);
+            f = get_c_file(dir,NULL);
+            fd = fileno(f);
+            iflag = no_interrupt(1);
+            if (fchdir(fd))
+          return(err("fchdir",llast_c_errmsg(-1)));
+            no_interrupt(iflag);
 #else
-      err("fchdir not supported in os",NIL);
+            err("fchdir not supported in os", NIL);
 #endif
-      return(NIL);
-    default:
-      path = get_c_string(dir);
-      iflag = no_interrupt(1);
-      if (chdir(path))
-	return(err("chdir",llast_c_errmsg(-1)));
-      no_interrupt(iflag);
-      return(NIL);}}
+            return (NIL);
+        default:
+            path = get_c_string(dir);
+            iflag = no_interrupt(1);
+            if (chdir(path))
+                return (err("chdir", llast_c_errmsg(-1)));
+            no_interrupt(iflag);
+            return (NIL);
+    }
+}
 
 #if defined(__osf__)
 LISP rld_pathnames(void)
@@ -1885,176 +1941,189 @@ LISP lpipe(void)
 #define CTYPE_LONG    9
 #define CTYPE_ULONG  10
 
-LISP err_large_index(LISP ind)
-{return(err("index too large",ind));}
+LISP err_large_index(LISP ind) { return (err("index too large", ind)); }
 
-LISP datref(LISP dat,LISP ctype,LISP ind)
-{char *data;
- long size,i;
- data = get_c_string_dim(dat,&size);
- i = get_c_long(ind);
- if (i < 0) err("negative index",ind);
- switch(get_c_long(ctype))
-   {case CTYPE_FLOAT:
-      if (((i+1) * (int) sizeof(float)) > size) err_large_index(ind);
-      return(flocons(((float *)data)[i]));
-    case CTYPE_DOUBLE:
-      if (((i+1) * (int) sizeof(double)) > size) err_large_index(ind);
-      return(flocons(((double *)data)[i]));
-    case CTYPE_LONG:
-      if (((i+1) * (int) sizeof(long)) > size) err_large_index(ind);
-      return(flocons(((long *)data)[i]));
-    case CTYPE_SHORT:
-      if (((i+1) * (int) sizeof(short)) > size) err_large_index(ind);
-      return(flocons(((short *)data)[i]));
-    case CTYPE_CHAR:
-      if (((i+1) * (int) sizeof(char)) > size) err_large_index(ind);
-      return(flocons(((char *)data)[i]));
-    case CTYPE_INT:
-      if (((i+1) * (int) sizeof(int)) > size) err_large_index(ind);
-      return(flocons(((int *)data)[i]));
-    case CTYPE_ULONG:
-      if (((i+1) * (int) sizeof(unsigned long)) > size) err_large_index(ind);
-      return(flocons(((unsigned long *)data)[i]));
-    case CTYPE_USHORT:
-      if (((i+1) * (int) sizeof(unsigned short)) > size) err_large_index(ind);
-      return(flocons(((unsigned short *)data)[i]));
-    case CTYPE_UCHAR:
-      if (((i+1) * (int) sizeof(unsigned char)) > size) err_large_index(ind);
-      return(flocons(((unsigned char *)data)[i]));
-    case CTYPE_UINT:
-      if (((i+1) * (int) sizeof(unsigned int)) > size) err_large_index(ind);
-      return(flocons(((unsigned int *)data)[i]));
-    default:
-      return(err("unknown CTYPE",ctype));}}
+LISP datref(LISP dat, LISP ctype, LISP ind) {
+    char *data;
+    long size, i;
+    data = get_c_string_dim(dat, &size);
+    i = get_c_long(ind);
+    if (i < 0) err("negative index", ind);
+    switch (get_c_long(ctype)) {
+        case CTYPE_FLOAT:
+            if (((i + 1) * (int) sizeof(float)) > size) err_large_index(ind);
+            return (flocons(((float *) data)[i]));
+        case CTYPE_DOUBLE:
+            if (((i + 1) * (int) sizeof(double)) > size) err_large_index(ind);
+            return (flocons(((double *) data)[i]));
+        case CTYPE_LONG:
+            if (((i + 1) * (int) sizeof(long)) > size) err_large_index(ind);
+            return (flocons(((long *) data)[i]));
+        case CTYPE_SHORT:
+            if (((i + 1) * (int) sizeof(short)) > size) err_large_index(ind);
+            return (flocons(((short *) data)[i]));
+        case CTYPE_CHAR:
+            if (((i + 1) * (int) sizeof(char)) > size) err_large_index(ind);
+            return (flocons(((char *) data)[i]));
+        case CTYPE_INT:
+            if (((i + 1) * (int) sizeof(int)) > size) err_large_index(ind);
+            return (flocons(((int *) data)[i]));
+        case CTYPE_ULONG:
+            if (((i + 1) * (int) sizeof(unsigned long)) > size) err_large_index(ind);
+            return (flocons(((unsigned long *) data)[i]));
+        case CTYPE_USHORT:
+            if (((i + 1) * (int) sizeof(unsigned short)) > size) err_large_index(ind);
+            return (flocons(((unsigned short *) data)[i]));
+        case CTYPE_UCHAR:
+            if (((i + 1) * (int) sizeof(unsigned char)) > size) err_large_index(ind);
+            return (flocons(((unsigned char *) data)[i]));
+        case CTYPE_UINT:
+            if (((i + 1) * (int) sizeof(unsigned int)) > size) err_large_index(ind);
+            return (flocons(((unsigned int *) data)[i]));
+        default:
+            return (err("unknown CTYPE", ctype));
+    }
+}
 
-LISP sdatref(LISP spec,LISP dat)
-{return(datref(dat,car(spec),cdr(spec)));}
+LISP sdatref(LISP spec, LISP dat) { return (datref(dat, car(spec), cdr(spec))); }
 
-LISP mkdatref(LISP ctype,LISP ind)
-{return(closure(cons(ctype,ind),
-		leval(cintern("sdatref"),NIL)));}
+LISP mkdatref(LISP ctype, LISP ind) {
+    return (closure(cons(ctype, ind),
+                    leval(cintern("sdatref"), NIL)));
+}
 
-LISP datlength(LISP dat,LISP ctype)
-{char *data;
- long size;
- data = get_c_string_dim(dat,&size);
- switch(get_c_long(ctype))
-   {case CTYPE_FLOAT:
-      return(flocons(size / sizeof(float)));
-    case CTYPE_DOUBLE:
-      return(flocons(size / sizeof(double)));
-    case CTYPE_LONG:
-      return(flocons(size / sizeof(long)));
-    case CTYPE_SHORT:
-      return(flocons(size / sizeof(short)));
-    case CTYPE_CHAR:
-      return(flocons(size / sizeof(char)));
-    case CTYPE_INT:
-      return(flocons(size / sizeof(int)));
-    case CTYPE_ULONG:
-      return(flocons(size / sizeof(unsigned long)));
-    case CTYPE_USHORT:
-      return(flocons(size / sizeof(unsigned short)));
-    case CTYPE_UCHAR:
-      return(flocons(size / sizeof(unsigned char)));
-    case CTYPE_UINT:
-      return(flocons(size / sizeof(unsigned int)));
-    default:
-      return(err("unknown CTYPE",ctype));}}
+LISP datlength(LISP dat, LISP ctype) {
+    char *data;
+    long size;
+    data = get_c_string_dim(dat, &size);
+    switch (get_c_long(ctype)) {
+        case CTYPE_FLOAT:
+            return (flocons(size / sizeof(float)));
+        case CTYPE_DOUBLE:
+            return (flocons(size / sizeof(double)));
+        case CTYPE_LONG:
+            return (flocons(size / sizeof(long)));
+        case CTYPE_SHORT:
+            return (flocons(size / sizeof(short)));
+        case CTYPE_CHAR:
+            return (flocons(size / sizeof(char)));
+        case CTYPE_INT:
+            return (flocons(size / sizeof(int)));
+        case CTYPE_ULONG:
+            return (flocons(size / sizeof(unsigned long)));
+        case CTYPE_USHORT:
+            return (flocons(size / sizeof(unsigned short)));
+        case CTYPE_UCHAR:
+            return (flocons(size / sizeof(unsigned char)));
+        case CTYPE_UINT:
+            return (flocons(size / sizeof(unsigned int)));
+        default:
+            return (err("unknown CTYPE", ctype));
+    }
+}
 
-static LISP cgi_main(LISP result)
-{if (CONSP(result) && TYPEP(car(result),tc_string))
-   {put_st("Status: 500 Server Error (Application)\n");
-    put_st("Content-type: text/html\n\n");
-    put_st("<HTML><HEAD><TITLE>Server Error (Application)</TITLE></HEAD>\n");
-    put_st("<BODY><H1>Server Error (Application)</H1>\n");
-    put_st("An application on this server has encountered an error\n");
-    put_st("which prevents it from fulfilling your request.");
-    put_st("<P><PRE><B>Error Message:</B> ");
-    lprint(car(result),NIL);
-    if NNULLP(cdr(result))
-      {put_st("\n");
-       lprint(cdr(result),NIL);}
-    put_st("</PRE></BODY></HTML>\n");
-    err("cgi-main",NIL);}
- return(NIL);}
-
-
-static int htqs_arg(char *value)
-{char tmpbuff[1024],*p1,*p2;
- if ((strcmp(value,"(repl)") == 0) ||
-     (strcmp(value,"repl") == 0))
-   return(repl_driver(1,1,NULL));
- else if (!strchr(value,'('))
-   {strcpy(tmpbuff,"(require \"");
-    for(p1 = &tmpbuff[strlen(tmpbuff)],p2 = value;*p2;++p2)
-	{if (strchr("\\\"",*p2)) *p1++ = '\\';
-	 *p1++ = *p2;}
-	*p1 = 0;
-	strcat(tmpbuff,"\")");
-    return(repl_c_string(tmpbuff,0,0,0));}
- else
-   return(repl_c_string(value,0,0,0));}
+static LISP cgi_main(LISP result) {
+    if (CONSP(result) && TYPEP(car(result), tc_string)) {
+        put_st("Status: 500 Server Error (Application)\n");
+        put_st("Content-type: text/html\n\n");
+        put_st("<HTML><HEAD><TITLE>Server Error (Application)</TITLE></HEAD>\n");
+        put_st("<BODY><H1>Server Error (Application)</H1>\n");
+        put_st("An application on this server has encountered an error\n");
+        put_st("which prevents it from fulfilling your request.");
+        put_st("<P><PRE><B>Error Message:</B> ");
+        lprint(car(result), NIL);
+        if NNULLP(cdr(result)) {
+            put_st("\n");
+            lprint(cdr(result), NIL);
+        }
+        put_st("</PRE></BODY></HTML>\n");
+        err("cgi-main", NIL);
+    }
+    return (NIL);
+}
 
 
-int __stdcall siod_main(int argc,char **argv, char **env)
-{int j,retval = 0,iargc,mainflag = 0,text_plain_flag = 0;
- char *iargv[2],*start,*end;
- LISP l;
- iargv[0] = "";
- for(iargc=0,j=1;j<argc; ++j)
-   if (*(start = argv[j]) == '-')
-     {while(*start)
-	{if (!(end = strstr(start,",-"))) end = &start[strlen(start)];
-	 iargv[1] = (char *) malloc(end-start+1);
-	 memcpy(iargv[1],start,end-start);
-	 iargv[1][end-start] = 0;
-	 if ((strncmp(iargv[1],"-v",2) == 0) &&
-	     (atol(&iargv[1][2]) > 0) &&
-	     (iargv[1][2] != '0'))
-	   {put_st("Content-type: text/plain\r\n\r\n");
-	    text_plain_flag = 1;}
-	 if ((strncmp(iargv[1],"-m",2) == 0))
-	   mainflag = atol(&iargv[1][2]);
-	 else
-	   process_cla(2,iargv,1);
-	 /* Note: Not doing free(iargv[1]); */
-	 start = (*end) ? end+1 : end;}}
- else
-   ++iargc;
- print_welcome();
- print_hs_1();
- init_storage();
- for(l=NIL,j=0;j<argc;++j)
-   l = cons(strcons(strlen(argv[j]),argv[j]),l);
- setvar(cintern("*args*"),nreverse(l),NIL);
- l = NIL;
- for(l=NIL,j=0;env && env[j];++j)
-   l = cons(strcons(strlen(env[j]),env[j]),l);
- setvar(cintern("*env*"),nreverse(l),NIL);
- l = NIL;
- init_subrs();
- init_trace();
- init_slibu();
- init_subr_1("__cgi-main",cgi_main);
- if (iargc == 0)
-   retval = repl_driver(1,1,NULL);
- else
-   {for(j=1;j<(((mainflag >= 2) && (argc > 3)) ? 3 : argc);++j)
-      if (argv[j][0] != '-')
-	{retval = htqs_arg(argv[j]);
-	 if (retval != 0) break;}
-    if (mainflag)
-      retval = htqs_arg(((mainflag > 2) && !text_plain_flag)
-			? "(__cgi-main (*catch 'errobj (main))))"
-			: "(main)");}
- if (siod_verbose_check(2))
-   put_st("EXIT\n");
+static int htqs_arg(char *value) {
+    char tmpbuff[1024], *p1, *p2;
+    if ((strcmp(value, "(repl)") == 0) ||
+        (strcmp(value, "repl") == 0))
+        return (repl_driver(1, 1, NULL));
+    else if (!strchr(value, '(')) {
+        strcpy(tmpbuff, "(require \"");
+        for (p1 = &tmpbuff[strlen(tmpbuff)], p2 = value; *p2; ++p2) {
+            if (strchr("\\\"", *p2)) *p1++ = '\\';
+            *p1++ = *p2;
+        }
+        *p1 = 0;
+        strcat(tmpbuff, "\")");
+        return (repl_c_string(tmpbuff, 0, 0, 0));
+    } else
+        return (repl_c_string(value, 0, 0, 0));
+}
+
+
+int __stdcall siod_main(int argc, char **argv, char **env) {
+    int j, retval = 0, iargc, mainflag = 0, text_plain_flag = 0;
+    char *iargv[2], *start, *end;
+    LISP l;
+    iargv[0] = "";
+    for (iargc = 0, j = 1; j < argc; ++j)
+        if (*(start = argv[j]) == '-') {
+            while (*start) {
+                if (!(end = strstr(start, ",-"))) end = &start[strlen(start)];
+                iargv[1] = (char *) malloc(end - start + 1);
+                memcpy(iargv[1], start, end - start);
+                iargv[1][end - start] = 0;
+                if ((strncmp(iargv[1], "-v", 2) == 0) &&
+                    (atol(&iargv[1][2]) > 0) &&
+                    (iargv[1][2] != '0')) {
+                    put_st("Content-type: text/plain\r\n\r\n");
+                    text_plain_flag = 1;
+                }
+                if ((strncmp(iargv[1], "-m", 2) == 0))
+                    mainflag = atol(&iargv[1][2]);
+                else
+                    process_cla(2, iargv, 1);
+                /* Note: Not doing free(iargv[1]); */
+                start = (*end) ? end + 1 : end;
+            }
+        } else
+            ++iargc;
+    print_welcome();
+    print_hs_1();
+    init_storage();
+    for (l = NIL, j = 0; j < argc; ++j)
+        l = cons(strcons(strlen(argv[j]), argv[j]), l);
+    setvar(cintern("*args*"), nreverse(l), NIL);
+    l = NIL;
+    for (l = NIL, j = 0; env && env[j]; ++j)
+        l = cons(strcons(strlen(env[j]), env[j]), l);
+    setvar(cintern("*env*"), nreverse(l), NIL);
+    l = NIL;
+    init_subrs();
+    init_trace();
+    init_slibu();
+    init_subr_1("__cgi-main", cgi_main);
+    if (iargc == 0)
+        retval = repl_driver(1, 1, NULL);
+    else {
+        for (j = 1; j < (((mainflag >= 2) && (argc > 3)) ? 3 : argc); ++j)
+            if (argv[j][0] != '-') {
+                retval = htqs_arg(argv[j]);
+                if (retval != 0) break;
+            }
+        if (mainflag)
+            retval = htqs_arg(((mainflag > 2) && !text_plain_flag)
+                              ? "(__cgi-main (*catch 'errobj (main))))"
+                              : "(main)");
+    }
+    if (siod_verbose_check(2))
+        put_st("EXIT\n");
 #ifdef VMS
- if (retval == 0) retval = 1;
+    if (retval == 0) retval = 1;
 #endif
- return(retval);}
+    return (retval);
+}
 
 /* A megabyte seems like a huge bootstrap exe,
    but we have seen that in debug mode the size of wcsiod.exe,
@@ -2063,38 +2132,45 @@ int __stdcall siod_main(int argc,char **argv, char **env)
 
 #define BOOTSTRAP_EXE_FILE_SIZE_LIMIT 1000000
 
-long position_script(FILE *f,char *buff,size_t bufflen)
+long position_script(FILE *f, char *buff, size_t bufflen)
 /* This recognizes #!/ sequence. Exersize: compute the probability
    of the sequence showing up in a file of N random bytes. */
-{int c,s = 0;
- long pos = -1,offset;
- size_t j;
- buff[0] = 0;
- for(offset=0;offset<BOOTSTRAP_EXE_FILE_SIZE_LIMIT;++offset)
-  {c = getc(f);
-   switch(c) 
-    {case EOF: 
-	  return(-1);
-     case '#':
-      s = '#';
-      pos = offset;
-      break;
-	 case '!':
-      s = (s == '#') ? '!' : 0;
-      break;
-     case '/':
-      if (s == '!')
-       {while((c = getc(f)) != EOF) if (c == ' ') break;  
-        for(j=0;((c = getc(f)) != '\n') && (c != EOF) && (j+1 <= bufflen);++j)
-         {buff[j] = c; buff[j+1] = 0;}
-        if (strspn(buff," \t\r") == strlen(buff)) buff[0] = 0;
-        return(pos);}
-      s = 0;
-      break;
-     default:
-      s = 0;
-      break;}}
-return(-1);}
+{
+    int c, s = 0;
+    long pos = -1, offset;
+    size_t j;
+    buff[0] = 0;
+    for (offset = 0; offset < BOOTSTRAP_EXE_FILE_SIZE_LIMIT; ++offset) {
+        c = getc(f);
+        switch (c) {
+            case EOF:
+                return (-1);
+            case '#':
+                s = '#';
+                pos = offset;
+                break;
+            case '!':
+                s = (s == '#') ? '!' : 0;
+                break;
+            case '/':
+                if (s == '!') {
+                    while ((c = getc(f)) != EOF) if (c == ' ') break;
+                    for (j = 0; ((c = getc(f)) != '\n') && (c != EOF) && (j + 1 <= bufflen); ++j) {
+                        buff[j] = c;
+                        buff[j + 1] = 0;
+                    }
+                    if (strspn(buff, " \t\r") == strlen(buff)) buff[0] = 0;
+                    return (pos);
+                }
+                s = 0;
+                break;
+            default:
+                s = 0;
+                break;
+        }
+    }
+    return (-1);
+}
 
 #ifdef WIN32
 char *find_exe_self(char *cmd)
@@ -2109,271 +2185,275 @@ char *find_exe_self(char *cmd)
  else
   return(cmd);}
 #endif
-  
-void __stdcall siod_shuffle_args(int *pargc,char ***pargv)
- /* shuffle arguments in the same way that the unix exec loader
-    would do for a #!/xxx script execution. */
-{FILE *f;
- char flagbuff[100],**argv,**nargv,offbuff[10];
- long pos;
- int argc,nargc,j,k;
- argc = *pargc;
- argv = *pargv;
+
+void __stdcall siod_shuffle_args(int *pargc, char ***pargv)
+/* shuffle arguments in the same way that the unix exec loader
+   would do for a #!/xxx script execution. */
+{
+    FILE *f;
+    char flagbuff[100], **argv, **nargv, offbuff[10];
+    long pos;
+    int argc, nargc, j, k;
+    argc = *pargc;
+    argv = *pargv;
 #ifdef WIN32
- argv[0] = find_exe_self(argv[0]);
- process_cla(1,argv,1);
+    argv[0] = find_exe_self(argv[0]);
+    process_cla(1,argv,1);
 #endif
- if (!(f = fopen(argv[0],"rb")))
-  {/* perror(argv[0]); */
-   return;}
- pos = position_script(f,flagbuff,sizeof(flagbuff));
- fclose(f);
- if (pos < 0) return;
- nargc = argc + ((*flagbuff) ? 2 : 1);
- nargv = (char **) malloc(sizeof(char *) * nargc);
- j = 0;
- nargv[j++] = "siod.exe";
- if (*flagbuff) nargv[j++] = strdup(flagbuff);
- sprintf(offbuff,"%ld",pos);
- nargv[j] = (char *) malloc(strlen(offbuff)+strlen(argv[0])+2);
- sprintf(nargv[j],"%s%c%s",offbuff,VLOAD_OFFSET_HACK_CHAR,argv[0]);
- j++;
- for(k=1;k<argc;++k) nargv[j++] = argv[k];
- *pargc = nargc;
- *pargv = nargv;
- }
+    if (!(f = fopen(argv[0], "rb"))) {/* perror(argv[0]); */
+        return;
+    }
+    pos = position_script(f, flagbuff, sizeof(flagbuff));
+    fclose(f);
+    if (pos < 0) return;
+    nargc = argc + ((*flagbuff) ? 2 : 1);
+    nargv = (char **) malloc(sizeof(char *) * nargc);
+    j = 0;
+    nargv[j++] = "siod.exe";
+    if (*flagbuff) nargv[j++] = strdup(flagbuff);
+    sprintf(offbuff, "%ld", pos);
+    nargv[j] = (char *) malloc(strlen(offbuff) + strlen(argv[0]) + 2);
+    sprintf(nargv[j], "%s%c%s", offbuff, VLOAD_OFFSET_HACK_CHAR, argv[0]);
+    j++;
+    for (k = 1; k < argc; ++k) nargv[j++] = argv[k];
+    *pargc = nargc;
+    *pargv = nargv;
+}
 
-LISP lposition_script(LISP lfile)
-{FILE *f;
- long iflag,pos;
- char flbuff[100];
- if (SYMBOLP(lfile))
-   return(flocons(BOOTSTRAP_EXE_FILE_SIZE_LIMIT));
- f = get_c_file(lfile,stdin);
- iflag = no_interrupt(1);
- pos = position_script(f,flbuff,sizeof(flbuff));
- no_interrupt(iflag);
- if (pos < 0) return(NIL);
- return(cons(flocons(pos),strcons(-1,flbuff)));}
+LISP lposition_script(LISP lfile) {
+    FILE *f;
+    long iflag, pos;
+    char flbuff[100];
+    if (SYMBOLP(lfile))
+        return (flocons(BOOTSTRAP_EXE_FILE_SIZE_LIMIT));
+    f = get_c_file(lfile, stdin);
+    iflag = no_interrupt(1);
+    pos = position_script(f, flbuff, sizeof(flbuff));
+    no_interrupt(iflag);
+    if (pos < 0) return (NIL);
+    return (cons(flocons(pos), strcons(-1, flbuff)));
+}
 
-void __stdcall siod_init(int argc,char **argv)
-{process_cla(argc,argv,0);
- init_storage();
- init_subrs();
- init_trace();
- init_slibu();}
- 
-void __stdcall init_slibu(void)
-{long j;
+void __stdcall siod_init(int argc, char **argv) {
+    process_cla(argc, argv, 0);
+    init_storage();
+    init_subrs();
+    init_trace();
+    init_slibu();
+}
+
+void __stdcall init_slibu(void) {
+    long j;
 #if defined(unix)
- char *tmp1,*tmp2;
+    char *tmp1,*tmp2;
 #endif
 #if defined(unix) || defined(WIN32)
- tc_opendir = allocate_user_tc();
- set_gc_hooks(tc_opendir,
-	      NULL,
-	      NULL,
-	      NULL,
-	      opendir_gc_free,
-	      &j);
- set_print_hooks(tc_opendir,opendir_prin1);
- init_subr_2("chmod",l_chmod);
+    tc_opendir = allocate_user_tc();
+    set_gc_hooks(tc_opendir,
+             NULL,
+             NULL,
+             NULL,
+             opendir_gc_free,
+             &j);
+    set_print_hooks(tc_opendir,opendir_prin1);
+    init_subr_2("chmod",l_chmod);
 #endif
 
- gc_protect_sym(&sym_channels,"*channels*");
- setvar(sym_channels,NIL,NIL);
+    gc_protect_sym(&sym_channels, "*channels*");
+    setvar(sym_channels, NIL, NIL);
 #ifdef WIN32
- init_subr_0("win32-debug",win32_debug);
+    init_subr_0("win32-debug",win32_debug);
 #endif
 #ifdef VMS
- init_subr_1("vms-debug",vms_debug);
- init_lsubr("sys$crembx",lcrembx);
- init_subr_4("lib$set_logical",lset_logical);
+    init_subr_1("vms-debug",vms_debug);
+    init_lsubr("sys$crembx",lcrembx);
+    init_subr_4("lib$set_logical",lset_logical);
 #endif
- init_lsubr("system",lsystem);
+    init_lsubr("system", lsystem);
 #ifndef WIN32
- init_subr_0("getgid",lgetgid);
- init_subr_0("getuid",lgetuid);
+    init_subr_0("getgid", lgetgid);
+    init_subr_0("getuid", lgetuid);
 #endif
 #if defined(unix) || defined(WIN32)
- init_subr_0("getcwd",lgetcwd);
+    init_subr_0("getcwd",lgetcwd);
 #endif
 #ifdef unix
- init_subr_2("crypt",lcrypt);
- init_subr_1("getpwuid",lgetpwuid);
- init_subr_1("getpwnam",lgetpwnam);
- init_subr_0("getpwent",lgetpwent);
- init_subr_0("setpwent",lsetpwent);
- init_subr_0("endpwent",lendpwent);
- init_subr_1("setuid",lsetuid);
- init_subr_1("seteuid",lseteuid);
- init_subr_0("geteuid",lgeteuid);
+    init_subr_2("crypt",lcrypt);
+    init_subr_1("getpwuid",lgetpwuid);
+    init_subr_1("getpwnam",lgetpwnam);
+    init_subr_0("getpwent",lgetpwent);
+    init_subr_0("setpwent",lsetpwent);
+    init_subr_0("endpwent",lendpwent);
+    init_subr_1("setuid",lsetuid);
+    init_subr_1("seteuid",lseteuid);
+    init_subr_0("geteuid",lgeteuid);
 #if defined(__osf__)
- init_subr_1("setpwfile",lsetpwfile);
+    init_subr_1("setpwfile",lsetpwfile);
 #endif
- init_subr_2("putpwent",lputpwent);
- init_subr_2("access-problem?",laccess_problem);
- init_subr_3("utime",lutime);
- init_subr_2("fchmod",lfchmod);
+    init_subr_2("putpwent",lputpwent);
+    init_subr_2("access-problem?",laccess_problem);
+    init_subr_3("utime",lutime);
+    init_subr_2("fchmod",lfchmod);
 #endif
- init_subr_1("random",lrandom);
- init_subr_1("srandom",lsrandom);
- init_subr_1("first",car);
- init_subr_1("rest",cdr);
+    init_subr_1("random", lrandom);
+    init_subr_1("srandom", lsrandom);
+    init_subr_1("first", car);
+    init_subr_1("rest", cdr);
 #ifdef unix
- init_subr_0("fork",lfork);
- init_subr_3("exec",lexec);
- init_subr_1("nice",lnice);
- init_subr_2("wait",lwait);
- init_subr_0("getpgrp",lgetpgrp);
- init_subr_1("getgrgid",lgetgrgid);
- init_subr_2("kill",lkill);
+    init_subr_0("fork",lfork);
+    init_subr_3("exec",lexec);
+    init_subr_1("nice",lnice);
+    init_subr_2("wait",lwait);
+    init_subr_0("getpgrp",lgetpgrp);
+    init_subr_1("getgrgid",lgetgrgid);
+    init_subr_2("kill",lkill);
 #endif
- init_subr_1("%%%memref",lmemref_byte);
- init_subr_0("getpid",lgetpid);
+    init_subr_1("%%%memref", lmemref_byte);
+    init_subr_0("getpid", lgetpid);
 #ifndef WIN32
- init_subr_0("getppid",lgetppid);
+    init_subr_0("getppid", lgetppid);
 #endif
- init_subr_1("exit",lexit);
- init_subr_1("trunc",ltrunc);
+    init_subr_1("exit", lexit);
+    init_subr_1("trunc", ltrunc);
 #ifdef unix
- init_subr_1("putenv",lputenv);
+    init_subr_1("putenv",lputenv);
 #endif
- init_subr_0("md5-init",md5_init);
- init_subr_3("md5-update",md5_update);
- init_subr_1("md5-final",md5_final);
+    init_subr_0("md5-init", md5_init);
+    init_subr_3("md5-update", md5_update);
+    init_subr_1("md5-final", md5_final);
 #if defined(__osf__) || defined(sun)
- init_subr_2("cpu-usage-limits",cpu_usage_limits);
+    init_subr_2("cpu-usage-limits",cpu_usage_limits);
 #endif
 #if defined(__osf__) || defined(SUN5) || defined(linux)
- init_subr_1("current-resource-usage",current_resource_usage);
+    init_subr_1("current-resource-usage",current_resource_usage);
 #endif
 #if  defined(unix) || defined(WIN32)
- init_subr_1("opendir",l_opendir);
- init_subr_1("closedir",l_closedir);
- init_subr_1("readdir",l_readdir);
+    init_subr_1("opendir",l_opendir);
+    init_subr_1("closedir",l_closedir);
+    init_subr_1("readdir",l_readdir);
 #endif
- init_subr_1("delete-file",delete_file);
- init_subr_1("file-times",file_times);
- init_subr_1("unix-time->strtime",utime2str);
- init_subr_0("unix-time",unix_time);
- init_subr_1("unix-ctime",unix_ctime);
- init_subr_1("getenv",lgetenv);
- init_subr_1("sleep",lsleep);
- init_subr_1("url-encode",url_encode);
- init_subr_1("url-decode",url_decode);
- init_subr_2("gets",lgets);
- init_subr_1("readline",readline);
- init_subr_1("html-encode",html_encode);
- init_subr_1("html-decode",html_decode);
+    init_subr_1("delete-file", delete_file);
+    init_subr_1("file-times", file_times);
+    init_subr_1("unix-time->strtime", utime2str);
+    init_subr_0("unix-time", unix_time);
+    init_subr_1("unix-ctime", unix_ctime);
+    init_subr_1("getenv", lgetenv);
+    init_subr_1("sleep", lsleep);
+    init_subr_1("url-encode", url_encode);
+    init_subr_1("url-decode", url_decode);
+    init_subr_2("gets", lgets);
+    init_subr_1("readline", readline);
+    init_subr_1("html-encode", html_encode);
+    init_subr_1("html-decode", html_decode);
 #if defined(unix) || defined(WIN32)
- init_subr_1("decode-file-mode",decode_st_mode);
- init_subr_1("encode-file-mode",encode_st_mode);
- init_subr_1("stat",l_stat);
- init_subr_1("fstat",l_fstat);
+    init_subr_1("decode-file-mode",decode_st_mode);
+    init_subr_1("encode-file-mode",encode_st_mode);
+    init_subr_1("stat",l_stat);
+    init_subr_1("fstat",l_fstat);
 #endif
 #ifdef unix
- init_subr_1("encode-open-flags",encode_open_flags);
- init_subr_1("lstat",l_lstat);
+    init_subr_1("encode-open-flags",encode_open_flags);
+    init_subr_1("lstat",l_lstat);
 #endif
 #if defined(__osf__) || defined(SUN5)
- init_subr_3("fnmatch",l_fnmatch);
+    init_subr_3("fnmatch",l_fnmatch);
 #endif
 #ifdef unix
- init_subr_2("symlink",lsymlink);
- init_subr_2("link",llink);
- init_subr_1("unlink",lunlink);
- init_subr_1("rmdir",lrmdir);
- init_subr_2("mkdir",lmkdir);
- init_subr_2("rename",lrename);
- init_subr_1("readlink",lreadlink);
+    init_subr_2("symlink",lsymlink);
+    init_subr_2("link",llink);
+    init_subr_1("unlink",lunlink);
+    init_subr_1("rmdir",lrmdir);
+    init_subr_2("mkdir",lmkdir);
+    init_subr_2("rename",lrename);
+    init_subr_1("readlink",lreadlink);
 #endif
 #ifndef WIN32
- init_subr_3("chown",l_chown);
+    init_subr_3("chown", l_chown);
 #endif
 #if defined(unix) && !defined(linux)
- init_subr_3("lchown",l_lchown);
+    init_subr_3("lchown",l_lchown);
 #endif
- init_subr_1("http-date",http_date);
+    init_subr_1("http-date", http_date);
 #if defined(__osf__)
- init_subr_1("http-date-parse",http_date_parse);
+    init_subr_1("http-date-parse",http_date_parse);
 #endif
 #ifdef unix
- init_subr_2("popen",popen_l);
- init_subr_1("pclose",pclose_l);
+    init_subr_2("popen",popen_l);
+    init_subr_1("pclose",pclose_l);
 #endif
- init_subr_2("load-so",load_so);
- init_subr_1("require-so",require_so);
- init_subr_1("so-ext",so_ext);
+    init_subr_2("load-so", load_so);
+    init_subr_1("require-so", require_so);
+    init_subr_1("so-ext", so_ext);
 #ifdef unix
- setvar(cintern("SEEK_SET"),flocons(SEEK_SET),NIL);
- setvar(cintern("SEEK_CUR"),flocons(SEEK_CUR),NIL);
- setvar(cintern("SEEK_END"),flocons(SEEK_END),NIL);
- setvar(cintern("F_RDLCK"),flocons(F_RDLCK),NIL);
- setvar(cintern("F_WRLCK"),flocons(F_WRLCK),NIL);
- setvar(cintern("F_UNLCK"),flocons(F_UNLCK),NIL);
- init_subr_5("F_SETLK",lF_SETLK);
- init_subr_5("F_SETLKW",lF_SETLKW);
- init_subr_5("F_GETLK",lF_GETLK);
+    setvar(cintern("SEEK_SET"),flocons(SEEK_SET),NIL);
+    setvar(cintern("SEEK_CUR"),flocons(SEEK_CUR),NIL);
+    setvar(cintern("SEEK_END"),flocons(SEEK_END),NIL);
+    setvar(cintern("F_RDLCK"),flocons(F_RDLCK),NIL);
+    setvar(cintern("F_WRLCK"),flocons(F_WRLCK),NIL);
+    setvar(cintern("F_UNLCK"),flocons(F_UNLCK),NIL);
+    init_subr_5("F_SETLK",lF_SETLK);
+    init_subr_5("F_SETLKW",lF_SETLKW);
+    init_subr_5("F_GETLK",lF_GETLK);
 
 #endif
- init_subr_0("siod-lib",siod_lib_l);
+    init_subr_0("siod-lib", siod_lib_l);
 
 #ifdef unix
- if ((!(tmp1 = getenv(ld_library_path_env))) ||
-     (!strstr(tmp1,siod_lib)))
-   {tmp2 = (char *) must_malloc(strlen(ld_library_path_env) + 1 +
-				((tmp1) ? strlen(tmp1) + 1 : 0) +
-				strlen(siod_lib) + 1);
-    sprintf(tmp2,"%s=%s%s%s",
-	    ld_library_path_env,
-	    (tmp1) ? tmp1 : "",
-	    (tmp1) ? ":" : "",
-	    siod_lib);
-    /* note that we cannot free the string afterwards. */
-    putenv(tmp2);}
+    if ((!(tmp1 = getenv(ld_library_path_env))) ||
+        (!strstr(tmp1,siod_lib)))
+      {tmp2 = (char *) must_malloc(strlen(ld_library_path_env) + 1 +
+                   ((tmp1) ? strlen(tmp1) + 1 : 0) +
+                   strlen(siod_lib) + 1);
+       sprintf(tmp2,"%s=%s%s%s",
+           ld_library_path_env,
+           (tmp1) ? tmp1 : "",
+           (tmp1) ? ":" : "",
+           siod_lib);
+       /* note that we cannot free the string afterwards. */
+       putenv(tmp2);}
 #endif
 #ifdef vms
- setvar(cintern("*require-so-dir*"),
-	string_append(listn(2,
-			    strcons(-1,siod_lib),
-			    strcons(-1,".EXE"))),
-	NIL);
+    setvar(cintern("*require-so-dir*"),
+       string_append(listn(2,
+                   strcons(-1,siod_lib),
+                   strcons(-1,".EXE"))),
+       NIL);
 #endif
- init_subr_1("localtime",llocaltime);
- init_subr_1("gmtime",lgmtime);
+    init_subr_1("localtime", llocaltime);
+    init_subr_1("gmtime", lgmtime);
 #if defined(unix) || defined(WIN32)
- init_subr_0("tzset",ltzset);
+    init_subr_0("tzset",ltzset);
 #endif
- init_subr_1("mktime",lmktime);
- init_subr_1("chdir",lchdir);
+    init_subr_1("mktime", lmktime);
+    init_subr_1("chdir", lchdir);
 #if defined(__osf__)
- init_subr_0("rld-pathnames",rld_pathnames);
+    init_subr_0("rld-pathnames",rld_pathnames);
 #endif
 #if defined(__osf__) || defined(SUN5) || defined(linux)
- init_subr_3("strptime",lstrptime);
+    init_subr_3("strptime",lstrptime);
 #endif
 #ifdef unix
- init_subr_2("strftime",lstrftime);
- init_subr_1("getpass",lgetpass);
- init_subr_0("pipe",lpipe);
- init_subr_2("alarm",lalarm);
+    init_subr_2("strftime",lstrftime);
+    init_subr_1("getpass",lgetpass);
+    init_subr_0("pipe",lpipe);
+    init_subr_2("alarm",lalarm);
 #endif
 
- setvar(cintern("CTYPE_FLOAT"),flocons(CTYPE_FLOAT),NIL);
- setvar(cintern("CTYPE_DOUBLE"),flocons(CTYPE_DOUBLE),NIL);
- setvar(cintern("CTYPE_LONG"),flocons(CTYPE_LONG),NIL);
- setvar(cintern("CTYPE_SHORT"),flocons(CTYPE_SHORT),NIL);
- setvar(cintern("CTYPE_CHAR"),flocons(CTYPE_CHAR),NIL);
- setvar(cintern("CTYPE_INT"),flocons(CTYPE_INT),NIL);
- setvar(cintern("CTYPE_ULONG"),flocons(CTYPE_ULONG),NIL);
- setvar(cintern("CTYPE_USHORT"),flocons(CTYPE_USHORT),NIL);
- setvar(cintern("CTYPE_UCHAR"),flocons(CTYPE_UCHAR),NIL);
- setvar(cintern("CTYPE_UINT"),flocons(CTYPE_UINT),NIL);
- init_subr_3("datref",datref);
- init_subr_2("sdatref",sdatref);
- init_subr_2("mkdatref",mkdatref);
- init_subr_2("datlength",datlength);
- init_subr_1("position-script",lposition_script);
+    setvar(cintern("CTYPE_FLOAT"), flocons(CTYPE_FLOAT), NIL);
+    setvar(cintern("CTYPE_DOUBLE"), flocons(CTYPE_DOUBLE), NIL);
+    setvar(cintern("CTYPE_LONG"), flocons(CTYPE_LONG), NIL);
+    setvar(cintern("CTYPE_SHORT"), flocons(CTYPE_SHORT), NIL);
+    setvar(cintern("CTYPE_CHAR"), flocons(CTYPE_CHAR), NIL);
+    setvar(cintern("CTYPE_INT"), flocons(CTYPE_INT), NIL);
+    setvar(cintern("CTYPE_ULONG"), flocons(CTYPE_ULONG), NIL);
+    setvar(cintern("CTYPE_USHORT"), flocons(CTYPE_USHORT), NIL);
+    setvar(cintern("CTYPE_UCHAR"), flocons(CTYPE_UCHAR), NIL);
+    setvar(cintern("CTYPE_UINT"), flocons(CTYPE_UINT), NIL);
+    init_subr_3("datref", datref);
+    init_subr_2("sdatref", sdatref);
+    init_subr_2("mkdatref", mkdatref);
+    init_subr_2("datlength", datlength);
+    init_subr_1("position-script", lposition_script);
 
- init_slibu_version();}
+    init_slibu_version();
+}
