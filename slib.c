@@ -630,10 +630,11 @@ long repl(struct repl_hooks *h) {
             gc_cells_allocated = 0;
             gc_time_taken = 0.0;
         }
-        if (h->repl_eval == NULL)
+        if (h->repl_eval == NULL) {
             x = leval(x, NIL);
-        else
+        } else {
             x = (*h->repl_eval)(x);
+        }
         if (gc_kind_copying == 1)
             sprintf(tkbuffer,
                     "Evaluation took %g seconds %ld cons work, %g real.\n",
@@ -2274,7 +2275,9 @@ LISP lprin1f(LISP exp, FILE *f) {
     return (NIL);
 }
 
-LISP lread(LISP f) { return (lreadf(get_c_file(f, stdin))); }
+LISP lread(LISP f) {
+    return (lreadf(get_c_file(f, stdin)));
+}
 
 int f_getc(FILE *f) {
     long iflag, dflag;
