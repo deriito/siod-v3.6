@@ -1,7 +1,7 @@
 Quick Start:
 
 1. Make the environment for building Siod (with Docker)
-    1.1 Download docker image with the command "docker pull deriito/jikesrvm-3.1.4-buildenv:0.2"
+    1.1 Download docker image with the command "docker pull deriito/siod-v3.6-buildenv:0.1"
     1.2 Use the image to start a docker container
 
 2. Download this source code
