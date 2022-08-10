@@ -1078,12 +1078,12 @@ void __stdcall init_storage(void) {
 }
 
 void init_storage_1(void) {
-    LISP ptr;
+    LISP ptr; // LISPはstruct objを参照するポインタ
     long j;
     tkbuffer = (char *) must_malloc(TKBUFFERN + 1);
     if (((gc_kind_copying == 1) && (nheaps != 2)) || (nheaps < 1))
         err("invalid number of heaps", NIL);
-    heaps = (LISP *) must_malloc(sizeof(LISP) * nheaps);
+    heaps = (LISP *) must_malloc(sizeof(LISP) * nheaps); // LISPのポインタを格納する
     for (j = 0; j < nheaps; ++j) heaps[j] = NULL;
     heaps[0] = (LISP) must_malloc(sizeof(struct obj) * heap_size);
     heap = heaps[0];
@@ -1402,8 +1402,8 @@ void gc_mark_and_sweep(void) {
     mark_locations((LISP *) stack_start_ptr,
                    (LISP *) &stack_end);
 #ifdef THINK_C
-                                                                                                                            mark_locations((LISP *) ((char *) stack_start_ptr + 2),
-		(LISP *) ((char *) &stack_end + 2));
+    mark_locations((LISP *) ((char *) stack_start_ptr + 2),
+    (LISP *) ((char *) &stack_end + 2));
 #endif
     gc_sweep();
     gc_ms_stats_end();
@@ -1429,25 +1429,126 @@ void gc_ms_stats_end(void) {
     }
 }
 
+void type_to_string(char* res, short type) {
+    switch (type) {
+        case tc_cons:
+            strcpy(res, "CONS");
+            return;
+        case tc_flonum:
+            strcpy(res, "FLONUM");
+            return;
+        case tc_closure:
+            strcpy(res, "CLOSURE");
+            return;
+        default:
+            strcpy(res, "NO SUCH TYPE: ");
+            char tp[5];
+            sprintf(tp, "%d", type);
+            strcat(res, tp);
+    }
+}
 
-void gc_mark(LISP ptr) {
+void process_dead_marked_obj(LISP ptr, LISP** traced_objs, long traced_objs_tail_index,
+                             LISP** my_traced_objs, long my_traced_objs_tail_index) {
+    char* res = (char* ) malloc(sizeof(char) * 25);
+    type_to_string(res, ptr->type);
+
+    long path_info_length;
+    path_info_length += traced_objs_tail_index < 0 ? 0 : traced_objs_tail_index;
+    path_info_length += my_traced_objs_tail_index < 0 ? 0 : my_traced_objs_tail_index;
+    char* path = (char*) malloc(sizeof(char) * (path_info_length * (25 + 10 + 10))); // e.g. "TYPE; -> \n"
+
+    if (NULL != traced_objs) {
+        for (long i = 0; i <= traced_objs_tail_index; i++) {
+            char* tp = (char*) malloc(sizeof(char) * 25);;
+            type_to_string(tp, (*traced_objs[i])->type);
+            strcat(path, tp);
+            free(tp);
+            char semicolon_space[10] = "; ";
+            strcat(path, semicolon_space);
+            strcat(path, "-> \n");
+        }
+    }
+
+    for (long i = 0; i <= my_traced_objs_tail_index; i++) {
+        char* tp = (char*) malloc(sizeof(char) * 25);;
+        type_to_string(tp, (*my_traced_objs[i])->type);
+        strcat(path, tp);
+        free(tp);
+        char semicolon_space[10] = "; ";
+        strcat(path, semicolon_space);
+        if (i != my_traced_objs_tail_index) {
+            strcat(path, "-> \n");
+        } else {
+            strcat(path, "\n");
+        }
+    }
+
+    printf("\033[31mWarning: an object that was asserted dead is reachable.\nType: %s;\nPath to object: %s\033[0m",
+           res, path);
+
+    free(res);
+    free(path);
+}
+
+void gc_mark(LISP ptr, LISP **traced_objs, long traced_objs_tail_index) {
     struct user_type_hooks *p;
+
     gc_mark_loop:
-    if NULLP(ptr) return;
-    if ((*ptr).gc_mark) return;
+    if NULLP(ptr) {
+        return;
+    }
+
+    if ((*ptr).gc_mark) {
+        return;
+    }
+
     (*ptr).gc_mark = 1;
+
+    // recoding mark info that is for output of the full reference path
+    long my_traced_objs_tail_index = -1L;
+    LISP** my_traced_objs = (LISP**) malloc(sizeof(LISP*) * heap_size);
+    my_traced_objs_tail_index++;
+    my_traced_objs[my_traced_objs_tail_index] = &ptr;
+
+    // assert_dead check
+    if (ptr->assert_dead) {
+        process_dead_marked_obj(ptr, traced_objs, traced_objs_tail_index,
+                               my_traced_objs, my_traced_objs_tail_index);
+    }
+
+    // 先に再起呼び出しのgc_markが使用する新しいtraced_objsを用意
+    LISP** new_traced_objs = NULL;
+    long new_traced_objs_tail_index = -1L;
+    switch ((*ptr).type) {
+        case tc_cons:
+        case tc_closure:
+            new_traced_objs = (LISP**) malloc(sizeof(LISP*) * heap_size);
+            if (NULL != traced_objs) {
+                for (long i = 0; i <= traced_objs_tail_index; i++) {
+                    new_traced_objs_tail_index++;
+                    new_traced_objs[new_traced_objs_tail_index] = traced_objs[i];
+                }
+            }
+            for (long i = 0; i <= my_traced_objs_tail_index; i++) {
+                new_traced_objs_tail_index++;
+                new_traced_objs[new_traced_objs_tail_index] = my_traced_objs[i];
+            }
+            break;
+    }
+
     switch ((*ptr).type) {
         case tc_flonum:
             break;
         case tc_cons:
-            gc_mark(CAR(ptr));
+            gc_mark(CAR(ptr), new_traced_objs, new_traced_objs_tail_index);
             ptr = CDR(ptr);
             goto gc_mark_loop;
         case tc_symbol:
             ptr = VCELL(ptr);
             goto gc_mark_loop;
         case tc_closure:
-            gc_mark((*ptr).storage_as.closure.code);
+            gc_mark((*ptr).storage_as.closure.code, new_traced_objs, new_traced_objs_tail_index);
             ptr = (*ptr).storage_as.closure.env;
             goto gc_mark_loop;
         case tc_subr_0:
@@ -1466,6 +1567,14 @@ void gc_mark(LISP ptr) {
             if (p->gc_mark)
                 ptr = (*p->gc_mark)(ptr);
     }
+
+    // clean traced objs info
+    if (NULL != traced_objs) {
+        free(traced_objs);
+    }
+    traced_objs_tail_index = -1L;
+    free(my_traced_objs);
+    my_traced_objs_tail_index = -1L;
 }
 
 void mark_protected_registers(void) {
@@ -1476,7 +1585,7 @@ void mark_protected_registers(void) {
         location = (*reg).location;
         n = (*reg).length;
         for (j = 0; j < n; ++j)
-            gc_mark(location[j]);
+            gc_mark(location[j], NULL, -1L);
     }
 }
 
@@ -1511,7 +1620,7 @@ void mark_locations_array(LISP *x, long n) {
     for (j = 0; j < n; ++j) {
         p = x[j];
         if (looks_pointerp(p))
-            gc_mark(p);
+            gc_mark(p, NULL, -1L);
     }
 }
 
@@ -2109,8 +2218,7 @@ LISP let_macro(LISP form) {
         if SYMBOLP(tmp) {
             fl = cons(tmp, fl);
             al = cons(NIL, al);
-        }
-        else {
+        } else {
             fl = cons(car(tmp), fl);
             al = cons(car(cdr(tmp)), al);
         }
@@ -2778,6 +2886,15 @@ LISP cdar(LISP x) { return (cdr(car(x))); }
 
 LISP cddr(LISP x) { return (cdr(cdr(x))); }
 
+// gc assertions
+LISP assert_dead(LISP ptr) {
+    if (NULLP(ptr)) {
+        return err("Null Pointer!", ptr);
+    }
+    ptr->assert_dead = 1;
+    return (NIL);
+}
+
 LISP lrand(LISP m) {
     long res;
     res = rand();
@@ -2964,6 +3081,7 @@ void init_subrs_1(void) {
     init_subr_1("srand", lsrand);
     init_subr_0("last-c-error", lllast_c_errmsg);
     init_subr_0("os-classification", os_classification);
+    init_subr_1("assert_dead", assert_dead);
     init_slib_version();
 }
 
@@ -2983,5 +3101,3 @@ void prp(LISP *p) {
     if (!p) return;
     pr(*p);
 }
-
-

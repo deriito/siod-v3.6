@@ -16,6 +16,7 @@ extern "C" {
 struct obj {
     short gc_mark;
     short type;
+    short assert_dead; // for assert_dead
     union {
         struct {
             struct obj *car;
@@ -125,7 +126,7 @@ struct obj {
 #define CAR(x) ((*x).storage_as.cons.car)
 #define CDR(x) ((*x).storage_as.cons.cdr)
 #define PNAME(x) ((*x).storage_as.symbol.pname)
-#define VCELL(x) ((*x).storage_as.symbol.vcell)
+#define VCELL(x) ((*x).storage_as.symbol.vcell) // value cell for 即値
 #define SUBR0(x) (*((*x).storage_as.subr0.f))
 #define SUBR1(x) (*((*x).storage_as.subr1.f))
 #define SUBR2(x) (*((*x).storage_as.subr2.f))
@@ -188,12 +189,12 @@ typedef struct obj *LISP;
 typedef LISP (*SUBR_FUNC)(void);
 
 #define CONSP(x)   TYPEP(x,tc_cons)
-#define CPTRP(x)    TYPEP(x, tc_cptr  )
+#define CPTRP(x)   TYPEP(x, tc_cptr)
 #define FLONUMP(x) TYPEP(x,tc_flonum)
 #define SYMBOLP(x) TYPEP(x,tc_symbol)
 
 #define NCONSP(x)   NTYPEP(x,tc_cons)
-#define NCPTRP(x)   NTYPEP(x, tc_cptr  )
+#define NCPTRP(x)   NTYPEP(x, tc_cptr)
 #define NFLONUMP(x) NTYPEP(x,tc_flonum)
 #define NSYMBOLP(x) NTYPEP(x,tc_symbol)
 
