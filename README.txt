@@ -20,18 +20,18 @@ Quick Start:
 =======================================================================================================
 Update History:
 
-edited on 2022.07.25:
-This is the lastest version 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
-
 edited on 2022.08.10:
-The implement of "assert-dead(p)" in the thesis called "GC assertions[1]" has been implemented 
-in the brach "main" of this project. You can use it to assert the object which should be "dead" 
+The implement of "assert-dead(p)" in the thesis called "GC assertions[1]" has been implemented
+in the brach "main" of this project. You can use it to assert the object which should be "dead"
 in your source code. For more information, please see the original thesis.
 
-[1] Aftandilian, Edward E., and Samuel Z. Guyer. 
-    "GC assertions: Using the garbage collector to check heap properties." 
-    Proceedings of the 30th ACM SIGPLAN Conference on Programming Language Design and Implementation. 
+[1] Aftandilian, Edward E., and Samuel Z. Guyer.
+    "GC assertions: Using the garbage collector to check heap properties."
+    Proceedings of the 30th ACM SIGPLAN Conference on Programming Language Design and Implementation.
     2009.
+
+edited on 2022.07.25:
+This is the lastest version 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
 
 =======================================================================================================
 Original "README.txt" is as following:
