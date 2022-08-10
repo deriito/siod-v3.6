@@ -20,7 +20,7 @@ Quick Start:
 =======================================================================================================
 Update History:
 
-edited on 2022.08.10:
+* Edited on 2022.08.10:
 The implement of "assert-dead(p)" in the thesis called "GC assertions[1]" has been implemented
 in the brach "main" of this project. You can use it to assert the object which should be "dead"
 in your source code. For more information, please see the original thesis.
@@ -30,7 +30,7 @@ in your source code. For more information, please see the original thesis.
     Proceedings of the 30th ACM SIGPLAN Conference on Programming Language Design and Implementation.
     2009.
 
-edited on 2022.07.25:
+* Edited on 2022.07.25:
 This is the lastest version 3.6 of Siod, downloaded from http://people.delphiforums.com/gjc//siod.html
 
 =======================================================================================================
