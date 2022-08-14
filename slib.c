@@ -1515,7 +1515,7 @@ void gc_mark(LISP ptr, LISP **traced_objs, long traced_objs_tail_index) {
                                 my_traced_objs, my_traced_objs_tail_index);
     }
 
-    // 先に再起呼び出しのgc_markが使用する新しいtraced_objsを用意
+    // 先に再帰呼び出しのgc_markが使用する新しいtraced_objsを用意
     LISP **new_traced_objs = NULL;
     long new_traced_objs_tail_index = -1L;
     switch ((*ptr).type) {
