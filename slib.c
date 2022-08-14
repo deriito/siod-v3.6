@@ -1450,7 +1450,7 @@ void type_to_string(char* res, short type) {
 
 void process_dead_marked_obj(LISP ptr, LISP** traced_objs, long traced_objs_tail_index,
                              LISP** my_traced_objs, long my_traced_objs_tail_index) {
-    char* res = (char* ) malloc(sizeof(char) * 25);
+    char* res = (char*) malloc(sizeof(char) * 25);
     type_to_string(res, ptr->type);
 
     long path_info_length;
