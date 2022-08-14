@@ -1454,10 +1454,10 @@ void process_dead_marked_obj(LISP ptr, LISP **traced_objs, long traced_objs_tail
     char res[25];
     type_to_string(res, ptr->type);
 
-    long path_info_length;
+    long path_info_length = 1L;
     path_info_length += traced_objs_tail_index < 0 ? 0 : traced_objs_tail_index;
     path_info_length += my_traced_objs_tail_index < 0 ? 0 : my_traced_objs_tail_index;
-    char *path = (char *) malloc(sizeof(char) * (path_info_length * (25 + 10 + 10))); // e.g. "TYPE; -> \n"
+    char path[path_info_length * (25 + 10 + 10)]; // e.g. "TYPE; -> \n"
 
     if (NULL != traced_objs) {
         for (long i = 0; i <= traced_objs_tail_index; i++) {
@@ -1485,8 +1485,6 @@ void process_dead_marked_obj(LISP ptr, LISP **traced_objs, long traced_objs_tail
 
     printf("\033[31mWarning: an object that was asserted dead is reachable.\nType: %s;\nPath to object: %s\033[0m",
            res, path);
-
-    free(path);
 }
 
 void gc_mark(LISP ptr, LISP **traced_objs, long traced_objs_tail_index) {
