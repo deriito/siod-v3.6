@@ -174,7 +174,7 @@ long siod_verbose_level = 4;
 #define SIOD_LIB_DEFAULT "SIOD_LIB:"
 #endif
 #ifdef WIN32
-                                                                                                                        #define SIOD_LIB_DEFAULT "c:\\siod\\"
+#define SIOD_LIB_DEFAULT "c:\\siod\\"
 #include <float.h>
 #endif
 #endif
@@ -189,11 +189,12 @@ void __stdcall process_cla(int argc, char **argv, int warnflag) {
 #if !defined(vms)
     if (!siod_lib_set) {
 #ifdef WIN32
-                                                                                                                                if (argc > 0)
-	 {siod_lib = strdup(argv[0]);
-	  siod_lib_set = 1;
-	  if ((ptr = strrchr(siod_lib,'\\')))
-		  ptr[1] = 0;}
+       if (argc > 0) {
+           siod_lib = strdup(argv[0]);
+           siod_lib_set = 1;
+           if ((ptr = strrchr(siod_lib,'\\')))
+               ptr[1] = 0;
+       }
 #endif
         if (getenv("SIOD_LIB")) {
             siod_lib = getenv("SIOD_LIB");
@@ -316,9 +317,10 @@ void handle_sigint(int sig SIG_restargs) {
 }
 
 #if defined(WIN32)
-                                                                                                                        void handle_interrupt_differed(void)
-{interrupt_differed = 0;
- err_ctrl_c();}
+void handle_interrupt_differed(void) {
+    interrupt_differed = 0;
+    err_ctrl_c();
+}
 #endif
 
 void err_ctrl_c(void) { err("control-c interrupt", NIL); }
@@ -344,11 +346,10 @@ long repl_driver(long want_sigint, long want_init, struct repl_hooks *h) {
     }
     if (want_sigint) osigint = signal(SIGINT, handle_sigint);
 #ifdef WIN32_X
-                                                                                                                            /* doesn't work, because library functions like atof
+    /* doesn't work, because library functions like atof
     depend on default setting, or some other reason I didn't
     have time to investigate. */
- _controlfp(_EM_INVALID,
-	        _MCW_EM);
+ _controlfp(_EM_INVALID, _MCW_EM);
 #endif
     osigfpe = signal(SIGFPE, handle_sigfpe);
     catch_framep = (struct catch_frame *) NULL;
@@ -500,7 +501,7 @@ double myruntime(void) {
 #endif
 
 #if defined(__osf__)
-                                                                                                                        #include <sys/timers.h>
+#include <sys/timers.h>
 #ifndef TIMEOFDAY
 #define TIMEOFDAY 1
 #endif
@@ -513,7 +514,7 @@ double myrealtime(void)
 #endif
 
 #if defined(VMS)
-                                                                                                                        #include <ssdef.h>
+#include <ssdef.h>
 #include <starlet.h>
 
 double myrealtime(void)
@@ -529,7 +530,7 @@ double myrealtime(void)
 
 #if defined(SUN5) || defined(linux)
 
-                                                                                                                        #if defined(linux)
+#if defined(linux)
 #include <sys/time.h>
 #endif
 
@@ -541,7 +542,7 @@ double myrealtime(void)
 #endif
 
 #if defined(WIN32)
-                                                                                                                        #include <sys/timeb.h>
+#include <sys/timeb.h>
 double myrealtime(void)
 {struct _timeb x;
  _ftime(&x);
@@ -1429,7 +1430,7 @@ void gc_ms_stats_end(void) {
     }
 }
 
-void type_to_string(char* res, short type) {
+void type_to_string(char *res, short type) {
     switch (type) {
         case tc_cons:
             strcpy(res, "CONS");
@@ -1448,15 +1449,15 @@ void type_to_string(char* res, short type) {
     }
 }
 
-void process_dead_marked_obj(LISP ptr, LISP** traced_objs, long traced_objs_tail_index,
-                             LISP** my_traced_objs, long my_traced_objs_tail_index) {
+void process_dead_marked_obj(LISP ptr, LISP **traced_objs, long traced_objs_tail_index,
+                             LISP **my_traced_objs, long my_traced_objs_tail_index) {
     char res[25];
     type_to_string(res, ptr->type);
 
     long path_info_length;
     path_info_length += traced_objs_tail_index < 0 ? 0 : traced_objs_tail_index;
     path_info_length += my_traced_objs_tail_index < 0 ? 0 : my_traced_objs_tail_index;
-    char* path = (char*) malloc(sizeof(char) * (path_info_length * (25 + 10 + 10))); // e.g. "TYPE; -> \n"
+    char *path = (char *) malloc(sizeof(char) * (path_info_length * (25 + 10 + 10))); // e.g. "TYPE; -> \n"
 
     if (NULL != traced_objs) {
         for (long i = 0; i <= traced_objs_tail_index; i++) {
@@ -1504,23 +1505,23 @@ void gc_mark(LISP ptr, LISP **traced_objs, long traced_objs_tail_index) {
 
     // recoding mark info that is for output of the full reference path
     long my_traced_objs_tail_index = -1L;
-    LISP** my_traced_objs = (LISP**) malloc(sizeof(LISP*) * heap_size);
+    LISP **my_traced_objs = (LISP **) malloc(sizeof(LISP *) * heap_size);
     my_traced_objs_tail_index++;
     my_traced_objs[my_traced_objs_tail_index] = &ptr;
 
     // assert_dead check
     if (ptr->assert_dead) {
         process_dead_marked_obj(ptr, traced_objs, traced_objs_tail_index,
-                               my_traced_objs, my_traced_objs_tail_index);
+                                my_traced_objs, my_traced_objs_tail_index);
     }
 
     // 先に再起呼び出しのgc_markが使用する新しいtraced_objsを用意
-    LISP** new_traced_objs = NULL;
+    LISP **new_traced_objs = NULL;
     long new_traced_objs_tail_index = -1L;
     switch ((*ptr).type) {
         case tc_cons:
         case tc_closure:
-            new_traced_objs = (LISP**) malloc(sizeof(LISP*) * heap_size);
+            new_traced_objs = (LISP **) malloc(sizeof(LISP *) * heap_size);
             if (NULL != traced_objs) {
                 for (long i = 0; i <= traced_objs_tail_index; i++) {
                     new_traced_objs_tail_index++;
@@ -2391,8 +2392,8 @@ int f_getc(FILE *f) {
     dflag = interrupt_differed;
     c = getc(f);
 #ifdef VMS
-                                                                                                                            if ((dflag == 0) & interrupt_differed & (f == stdin))
-   while((c != 0) & (c != EOF)) c = getc(f);
+    if ((dflag == 0) & interrupt_differed & (f == stdin))
+    while((c != 0) & (c != EOF)) c = getc(f);
 #endif
     no_interrupt(iflag);
     return (c);
@@ -2745,10 +2746,10 @@ LISP nullp(LISP x) { if EQ(x, NIL) return (sym_t); else return (NIL); }
 
 LISP arglchk(LISP x) {
 #if (!ENVLOOKUP_TRICK)
-                                                                                                                            LISP l;
- if SYMBOLP(x) return(x);
- for(l=x;CONSP(l);l=CDR(l));
- if NNULLP(l) err("improper formal argument list",x);
+    LISP l;
+    if SYMBOLP(x) return(x);
+    for(l=x;CONSP(l);l=CDR(l));
+    if NNULLP(l) err("improper formal argument list",x);
 #endif
     return (x);
 }
