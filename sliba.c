@@ -76,7 +76,7 @@ LISP array_gc_mark(LISP ptr) {
     long j;
     if TYPEP(ptr, tc_lisp_array)
         for (j = 0; j < ptr->storage_as.lisp_array.dim; ++j)
-            gc_mark(ptr->storage_as.lisp_array.data[j], NULL, -1L);
+            gc_mark(ptr->storage_as.lisp_array.data[j], -1L);
     return (NIL);
 }
 

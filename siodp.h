@@ -110,7 +110,7 @@ void gc_for_newcell(void);
 void gc_mark_and_sweep(void);
 void gc_ms_stats_start(void);
 void gc_ms_stats_end(void);
-void gc_mark(LISP ptr, LISP** traced_objs, long traced_objs_tail_index);
+void gc_mark(LISP ptr, long traced_objs_tail_index);
 void mark_protected_registers(void);
 void mark_locations(LISP *start,LISP *end);
 void mark_locations_array(LISP *x,long n);
