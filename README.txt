@@ -6,7 +6,7 @@ Quick Start:
 
 2. Download this source code
     sh-5.1# > cd
-    sh-5.1# > git clone git@github.com:deriito/siod.git
+    sh-5.1# > git clone git@github.com:deriito/siod-v3.6.git
 
 3. Building & Installing
     sh-5.1# > cd siod
@@ -35,6 +35,8 @@ This is the lastest version 3.6 of Siod, downloaded from http://people.delphifor
 
 =======================================================================================================
 Original "README.txt" is as following:
+
+=======================================================================================================
 
 This is version 3.4 of Siod, Scheme In One Defun.
 
