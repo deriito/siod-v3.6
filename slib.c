@@ -1446,7 +1446,7 @@ void type_to_string(char *res, short type) {
             return;
         default:
             strcpy(res, "NO SUCH TYPE: ");
-            char tp[5];
+            char tp[5] = "";
             sprintf(tp, "%d", type);
             strcat(res, tp);
     }
@@ -1454,31 +1454,30 @@ void type_to_string(char *res, short type) {
 
 void process_dead_marked_obj(LISP ptr, long traced_objs_tail_index) {
     if (NULL == traced_objs) {
-        printf("\033[31mRuntime Exception: Why the traced_obj is NULL? (see slib.c:1456)\n\033[0m");
+        printf("\033[31mRuntime Exception: Why the traced_obj is NULL? (see \"process_dead_marked_obj()\")\n\033[0m");
         return;
     }
 
-    char res[25];
+    char res[25] = "";
     type_to_string(res, ptr->type);
 
     long path_info_length = 1L;
     path_info_length += traced_objs_tail_index < 0 ? 0 : traced_objs_tail_index;
-    char path[path_info_length * (25 + 10 + 10)]; // e.g. "TYPE; -> \n"
 
+    // e.g. "TYPE; ->\n"
+    char path[path_info_length * (25 + 10)];
+    memset(path, 0, sizeof(path));
     for (long i = 0; i <= traced_objs_tail_index; i++) {
-        char tp[25];
+        char tp[25] = "";
         type_to_string(tp, (*traced_objs[i])->type);
         strcat(path, tp);
-        char semicolon_space[10] = "; ";
-        strcat(path, semicolon_space);
+        strcat(path, "; ");
         if (i != traced_objs_tail_index) {
-            strcat(path, "-> \n");
-        } else {
-            strcat(path, "\n");
+            strcat(path, "->\n");
         }
     }
 
-    printf("\033[31mWarning: an object that was asserted dead is reachable.\nType: %s;\nPath to object: %s\033[0m",
+    printf("\033[31mWarning: an object that was asserted dead is reachable.\nType: %s;\nPath to object: %s\n\n\033[0m",
            res, path);
 }
 
